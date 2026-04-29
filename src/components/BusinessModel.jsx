@@ -5,7 +5,7 @@ import { T } from './theme'
 const SectionLabel = ({ n, children }) => (
   <div style={{ marginBottom: 10 }}>
     <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>
-      Section 01 — {n}
+      Section 01: {n}
     </span>
   </div>
 )
@@ -24,7 +24,7 @@ const STAGES_FWD = [
     id: 'merchant', label: 'Merchant', step: '01',
     desc: 'E-commerce seller places a shipment order via Bosta API or dashboard. Parcel is prepared for pickup.',
     teams: ['Merchant Success', 'Product / API'],
-    kpis: ['Order volume', 'COD accuracy', 'Address completeness rate'],
+    kpis: ['Order volume', 'Address completeness rate', 'API integration health'],
     data: ['MongoDB: merchant_orders (order_id, address, COD, weight, merchant_id)', 'Redshift: dim_merchants'],
   },
   {

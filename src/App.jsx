@@ -11,7 +11,7 @@ import Roadmap from './components/Roadmap'
 
 export default function App() {
   return (
-    <div style={{ background: '#F8FAFC', minHeight: '100vh' }}>
+    <div style={{ background: '#ECEEF2', minHeight: '100vh' }}>
       <Nav />
       <section id="hero"><Hero /></section>
       <section id="business"><BusinessModel /></section>

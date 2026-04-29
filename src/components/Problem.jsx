@@ -4,7 +4,7 @@ import { T } from './theme'
 
 const DSR_DRIVERS = [
   { label: 'Attempt Success Rate (ASR%)', sub: 'Did delivery succeed when attempted?', weight: 'Primary', direct: true,
-    drivers: ['Customer reachability', 'Address accuracy & GPS match', 'Driver navigation capability'] },
+    drivers: ['Customer reachability', 'Address accuracy & GPS match', 'Driver navigation capability', 'Fake attempts inflating miss count', 'Dispatching time (late OFD misses window)'] },
   { label: 'First Day Delivery Rate (FDDS%)', sub: 'Delivered on first OFD cycle?', weight: 'Primary', direct: true,
     drivers: ['Hub same-day dispatch rate', 'OFD list size vs capacity', 'Route optimisation'] },
   { label: 'Hub Backlog Rate', sub: 'Parcels not dispatched on time', weight: 'Direct', direct: true,
@@ -73,7 +73,7 @@ export default function Problem() {
 
       {/* Objective */}
       <div style={{ marginBottom: 10 }}>
-        <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Section 02 — Problem Statement</span>
+        <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Section 02: Problem Statement</span>
       </div>
       <h2 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', fontWeight: 800, letterSpacing: '-0.03em', color: T.text, marginBottom: 14 }}>
         One objective. Three perspectives on the same gap.
@@ -175,7 +175,7 @@ export default function Problem() {
             <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Driven by</div>
             {d.drivers.map((dr,j) => (
               <div key={j} style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
-                <span style={{ color: T.red, fontSize: 12 }}>—</span>
+                <span style={{ color: T.red, fontSize: 12, lineHeight: 1 }}>•</span>
                 <span style={{ fontSize: 12, color: T.textSec }}>{dr}</span>
               </div>
             ))}

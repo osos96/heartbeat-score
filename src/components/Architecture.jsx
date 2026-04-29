@@ -2,228 +2,169 @@
 import React, { useState } from 'react'
 import { T } from './theme'
 
-/* ── Draw.io-style SVG components ── */
-const Box = ({ x, y, w, h, label, sub, fill='#fff', stroke='#CBD5E1', bold=false, red=false }) => (
-  <g>
-    <rect x={x} y={y} width={w} height={h} rx={6} fill={red ? '#FEF2F2' : fill} stroke={red ? '#E30613' : stroke} strokeWidth={red?1.5:1}/>
-    <text x={x+w/2} y={y+h/2-(sub?7:0)} textAnchor="middle" dominantBaseline="middle"
-      fontSize={bold?12:11} fontWeight={bold?700:600} fill={red ? '#E30613' : '#0F172A'} fontFamily="Inter,sans-serif">
-      {label}
-    </text>
-    {sub && <text x={x+w/2} y={y+h/2+10} textAnchor="middle" dominantBaseline="middle"
-      fontSize={9} fontWeight={400} fill="#94A3B8" fontFamily="Inter,sans-serif">{sub}</text>}
-  </g>
-)
+/* ── Simple pipeline flow (div-based, no SVG clutter) ── */
+const STEPS = [
+  { n: '01', title: 'MongoDB',        sub: 'Operational event store', detail: 'delivery_attempts, hub_receipts, dispatch_events, merchant_orders', color: T.green },
+  { n: '02', title: 'ETL Pipeline',   sub: 'Transform and validate',  detail: 'Staging schema, data quality checks, address normalisation, GPS outlier filtering', color: T.blue },
+  { n: '03', title: 'Redshift DW',    sub: 'Analytics warehouse',     detail: 'fact_deliveries, agg_heartbeat_daily, dim_hubs, dim_stars, dim_merchants', color: T.amber },
+  { n: '04', title: 'HeartBeat Layer',sub: 'Composite OKR scoring',   detail: 'Stars x0.30 + Hubs x0.50 + Merchants x0.20, computed nightly at hub granularity', color: T.red },
+  { n: '05', title: 'Intelligence',   sub: 'Dashboards and alerts',   detail: 'Executive dashboard, hub-level drill-down, Slack threshold alerts, merchant portal', color: T.mono },
+]
 
-const Cyl = ({ x, y, w, h, label, sub, stroke='#CBD5E1' }) => (
-  <g>
-    <rect x={x} y={y+8} width={w} height={h-8} rx={0} fill="#F8FAFC" stroke={stroke} strokeWidth={1}/>
-    <ellipse cx={x+w/2} cy={y+8} rx={w/2} ry={8} fill="#F1F5F9" stroke={stroke} strokeWidth={1}/>
-    <ellipse cx={x+w/2} cy={y+h} rx={w/2} ry={8} fill="#F1F5F9" stroke={stroke} strokeWidth={1}/>
-    <text x={x+w/2} y={y+h/2+4} textAnchor="middle" dominantBaseline="middle"
-      fontSize={11} fontWeight={700} fill="#0F172A" fontFamily="Inter,sans-serif">{label}</text>
-    {sub && <text x={x+w/2} y={y+h/2+17} textAnchor="middle" dominantBaseline="middle"
-      fontSize={9} fill="#94A3B8" fontFamily="Inter,sans-serif">{sub}</text>}
-  </g>
-)
-
-const Arrow = ({ x1,y1,x2,y2,label,dashed=false }) => {
-  const dx = x2-x1, dy = y2-y1, len = Math.sqrt(dx*dx+dy*dy)
-  const ux = dx/len, uy = dy/len
-  const mx = (x1+x2)/2, my = (y1+y2)/2
-  const ex = x2 - ux*8, ey = y2 - uy*8
-  return (
-    <g>
-      <line x1={x1} y1={y1} x2={ex} y2={ey} stroke="#CBD5E1" strokeWidth={1.5}
-        strokeDasharray={dashed ? '5 3' : 'none'}/>
-      <polygon points={`${x2},${y2} ${x2-ux*8+uy*4},${y2-uy*8-ux*4} ${x2-ux*8-uy*4},${y2-uy*8+ux*4}`}
-        fill="#94A3B8"/>
-      {label && <text x={mx+4} y={my-4} fontSize={9} fill="#94A3B8" fontFamily="Inter,sans-serif">{label}</text>}
-    </g>
-  )
-}
-
-const Lane = ({ x, y, w, h, label, color='#F8FAFC' }) => (
-  <g>
-    <rect x={x} y={y} width={32} height={h} fill={color} stroke="#E2E8F0" strokeWidth={1}/>
-    <rect x={x+32} y={y} width={w-32} height={h} fill="#FFFFFF" stroke="#E2E8F0" strokeWidth={1}/>
-    <text x={x+16} y={y+h/2} textAnchor="middle" dominantBaseline="middle"
-      fontSize={9} fontWeight={700} fill="#64748B" fontFamily="Inter,sans-serif"
-      transform={`rotate(-90,${x+16},${y+h/2})`}>{label}</text>
-  </g>
-)
-
-/* ── Pipeline Flowchart ── */
 const PipelineChart = () => (
-  <svg viewBox="0 0 820 320" style={{ width:'100%', background:'#fff', borderRadius:12, border:`1px solid ${T.border}` }}>
-    {/* Swimlanes */}
-    <Lane x={0}   y={0} w={820} h={80}  label="Source Systems" color="#F0FDF4"/>
-    <Lane x={0}   y={80} w={820} h={80} label="Ingestion / ETL"  color="#EFF6FF"/>
-    <Lane x={0}   y={160} w={820} h={80} label="Warehouse"       color="#FFFBEB"/>
-    <Lane x={0}   y={240} w={820} h={80} label="BI / Output"     color="#FEF2F2"/>
-
-    {/* Source layer */}
-    <Cyl x={50}  y={16} w={100} h={50} label="MongoDB" sub="Operational events" stroke="#16A34A"/>
-    <Box x={200} y={20} w={100} h={40} label="Kafka / CDC" sub="Debezium connector" stroke="#2563EB"/>
-    <Box x={350} y={20} w={100} h={40} label="Batch API" sub="Merchant orders" stroke="#2563EB"/>
-    <Arrow x1={150} y1={40} x2={200} y2={40}/>
-    <Arrow x1={300} y1={40} x2={350} y2={40}/>
-
-    {/* ETL layer */}
-    <Box x={80}  y={96} w={110} h={48} label="Staging Schema" sub="Raw → validated" stroke="#2563EB"/>
-    <Box x={240} y={96} w={120} h={48} label="Transformation" sub="Agg + enrichment" stroke="#2563EB"/>
-    <Box x={420} y={96} w={110} h={48} label="Data Quality" sub="Null / dupe checks" stroke="#2563EB"/>
-    <Box x={590} y={96} w={110} h={48} label="Schema Registry" sub="Version control" stroke="#2563EB"/>
-    <Arrow x1={190} y1={120} x2={240} y2={120}/>
-    <Arrow x1={360} y1={120} x2={420} y2={120}/>
-    <Arrow x1={530} y1={120} x2={590} y2={120}/>
-    {/* vertical arrows src→etl */}
-    <Arrow x1={100} y1={66} x2={100} y2={96}/>
-    <Arrow x1={400} y1={60} x2={300} y2={96}/>
-
-    {/* Warehouse layer */}
-    <Cyl x={50}  y={178} w={110} h={50} label="Redshift" sub="Analytics DW" stroke="#D97706"/>
-    <Box x={200} y={182} w={120} h={40} label="fact_deliveries" sub="attempt-level grain" stroke="#D97706"/>
-    <Box x={370} y={182} w={120} h={40} label="agg_heartbeat_daily" sub="pre-computed scores" stroke="#D97706"/>
-    <Box x={550} y={182} w={120} h={40} label="dim_hubs / dim_stars" sub="reference tables" stroke="#D97706"/>
-    <Arrow x1={160} y1={200} x2={200} y2={200}/>
-    <Arrow x1={320} y1={200} x2={370} y2={200}/>
-    <Arrow x1={490} y1={200} x2={550} y2={200}/>
-    <Arrow x1={135} y1={144} x2={135} y2={178}/>
-
-    {/* BI layer */}
-    <Box x={50}  y={258} w={130} h={44} label="HeartBeat Dashboard" sub="Executive + Ops view" red={true}/>
-    <Box x={220} y={258} w={120} h={44} label="Alert Engine" sub="Slack / email triggers" stroke="#E30613"/>
-    <Box x={390} y={258} w={120} h={44} label="Merchant Portal" sub="Per-merchant DSR" stroke="#E30613"/>
-    <Box x={560} y={258} w={130} h={44} label="API / Export" sub="Downstream systems" stroke="#E30613"/>
-    <Arrow x1={180} y1={280} x2={220} y2={280}/>
-    <Arrow x1={340} y1={280} x2={390} y2={280}/>
-    <Arrow x1={510} y1={280} x2={560} y2={280}/>
-    <Arrow x1={260} y1={222} x2={115} y2={258}/>
-  </svg>
+  <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: '32px 24px', boxShadow: T.shadow }}>
+    <div style={{ display: 'flex', alignItems: 'flex-start', gap: 0, overflowX: 'auto' }}>
+      {STEPS.map((s, i) => (
+        <React.Fragment key={s.n}>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', minWidth: 130, padding: '0 8px' }}>
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${s.color}14`,
+              border: `2px solid ${s.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 13, fontWeight: 900, color: s.color, marginBottom: 12 }}>{s.n}</div>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 4 }}>{s.title}</div>
+            <div style={{ fontSize: 11, color: T.textMuted, lineHeight: 1.5, marginBottom: 10 }}>{s.sub}</div>
+            <div style={{ fontSize: 10, color: T.textSec, lineHeight: 1.6, background: T.cardSub,
+              border: `1px solid ${T.border}`, borderRadius: 6, padding: '6px 10px', textAlign: 'left' }}>{s.detail}</div>
+          </div>
+          {i < STEPS.length - 1 && (
+            <div style={{ display: 'flex', alignItems: 'center', paddingTop: 22, flexShrink: 0 }}>
+              <svg width="36" height="16" viewBox="0 0 36 16">
+                <line x1="0" y1="8" x2="26" y2="8" stroke={T.border} strokeWidth="2"/>
+                <polygon points="26,4 36,8 26,12" fill={T.border}/>
+              </svg>
+            </div>
+          )}
+        </React.Fragment>
+      ))}
+    </div>
+  </div>
 )
 
-/* ── HeartBeat Score Computation Tree ── */
+/* ── HeartBeat score tree (clean 3-pillar layout) ── */
 const ScoreTree = () => (
-  <svg viewBox="0 0 820 420" style={{ width:'100%', background:'#fff', borderRadius:12, border:`1px solid ${T.border}` }}>
-    {/* Root */}
-    <Box x={310} y={16} w={200} h={50} label="HeartBeat Score" sub="Composite OKR" bold={true} red={true}/>
-
+  <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: '32px 24px', boxShadow: T.shadow }}>
+    {/* Root node */}
+    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+      <div style={{ background: T.red, color: '#fff', borderRadius: 10, padding: '12px 48px',
+        fontWeight: 800, fontSize: 17, boxShadow: '0 4px 12px rgba(227,6,19,0.22)' }}>
+        HeartBeat Score
+      </div>
+    </div>
+    {/* Connector */}
+    <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
+      <svg width="640" height="36" viewBox="0 0 640 36">
+        <line x1="320" y1="0" x2="320" y2="18" stroke={T.border} strokeWidth="2"/>
+        <line x1="100" y1="18" x2="540" y2="18" stroke={T.border} strokeWidth="2"/>
+        <line x1="100" y1="18" x2="100" y2="36" stroke={T.border} strokeWidth="2"/>
+        <line x1="320" y1="18" x2="320" y2="36" stroke={T.border} strokeWidth="2"/>
+        <line x1="540" y1="18" x2="540" y2="36" stroke={T.border} strokeWidth="2"/>
+      </svg>
+    </div>
     {/* Three pillars */}
-    <Box x={60}  y={120} w={160} h={48} label="Stars OKR" sub="Weight: 30%" fill="#F0FDF4" stroke="#16A34A"/>
-    <Box x={330} y={120} w={160} h={48} label="Hubs OKR"  sub="Weight: 50%" fill="#EFF6FF" stroke="#2563EB"/>
-    <Box x={600} y={120} w={160} h={48} label="Merchants OKR" sub="Weight: 20%" fill="#FFFBEB" stroke="#D97706"/>
-
-    {/* Connecting lines from root to pillars */}
-    <Arrow x1={410} y1={66}  x2={140} y2={120}/>
-    <Arrow x1={410} y1={66}  x2={410} y2={120}/>
-    <Arrow x1={410} y1={66}  x2={680} y2={120}/>
-
-    {/* Stars KPIs */}
-    {[
-      [35,  220,'ASR%','Attempt success rate','30%'],
-      [35,  270,'FDDS%','First day delivery','20%'],
-      [35,  320,'OFD/Star','Avg OFD volume','20%'],
-      [35,  370,'Fake Attempt','Fraudulent logs ↓','10%'],
-    ].map(([x,y,label,sub,wt],i) => (
-      <g key={i}>
-        <Box x={x} y={y} w={140} h={38} label={label} sub={`${sub} · wt ${wt}`} stroke="#16A34A"/>
-        <Arrow x1={140} y1={144} x2={x+70} y2={y} dashed/>
-      </g>
-    ))}
-
-    {/* Hubs KPIs */}
-    {[
-      [300, 220,'Del. Promised%','SLA adherence','15%'],
-      [300, 270,'Backlog%','Undispatched ↓','15%'],
-      [300, 320,'Lost Parcel%','Asset loss ↓','15%'],
-      [300, 370,'Dispatch Rate','Same-day','10%'],
-    ].map(([x,y,label,sub,wt],i) => (
-      <g key={i}>
-        <Box x={x} y={y} w={145} h={38} label={label} sub={`${sub} · wt ${wt}`} stroke="#2563EB"/>
-        <Arrow x1={410} y1={168} x2={x+72} y2={y} dashed/>
-      </g>
-    ))}
-
-    {/* Merchants KPIs */}
-    {[
-      [565, 220,'DSR%','Per-merchant delivery','100%'],
-      [565, 270,'Merchant Tier','≤65% Bad Business','—'],
-    ].map(([x,y,label,sub,wt],i) => (
-      <g key={i}>
-        <Box x={x} y={y} w={145} h={38} label={label} sub={`${sub} · wt ${wt}`} stroke="#D97706"/>
-        <Arrow x1={680} y1={168} x2={x+72} y2={y} dashed/>
-      </g>
-    ))}
-  </svg>
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
+      {/* Stars */}
+      <div style={{ border: `1px solid ${T.green}40`, borderTop: `3px solid ${T.green}`, borderRadius: 8, padding: 18, background: T.greenLight }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.green, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Stars OKR</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: T.green, marginBottom: 2 }}>30%</div>
+        <div style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>Driver layer across all hubs</div>
+        {['ASR% - Attempt Success Rate','FDDS% - First Day Delivery','Fake Attempt Rate (negative)','OFD Volume per Star','CRP% - Return Pickup Rate','CRE% - Exchange Rate'].map((k,i)=>(
+          <div key={i} style={{ fontSize: 11, color: T.textSec, padding: '5px 9px', background: 'rgba(255,255,255,0.75)',
+            borderRadius: 4, marginBottom: 4, borderLeft: `2px solid ${T.green}` }}>{k}</div>
+        ))}
+      </div>
+      {/* Hubs */}
+      <div style={{ border: `1px solid ${T.blue}40`, borderTop: `3px solid ${T.blue}`, borderRadius: 8, padding: 18, background: T.blueLight }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Hubs OKR</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: T.blue, marginBottom: 2 }}>50%</div>
+        <div style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>Operations layer, majority weight</div>
+        {['Delivery Promised %','Backlog Rate (negative)','Same-Day Dispatch Rate','Lost Parcel % (negative)','Damaged Rate (negative)','Cycle Adaptation Score'].map((k,i)=>(
+          <div key={i} style={{ fontSize: 11, color: T.textSec, padding: '5px 9px', background: 'rgba(255,255,255,0.75)',
+            borderRadius: 4, marginBottom: 4, borderLeft: `2px solid ${T.blue}` }}>{k}</div>
+        ))}
+      </div>
+      {/* Merchants */}
+      <div style={{ border: `1px solid ${T.amber}40`, borderTop: `3px solid ${T.amber}`, borderRadius: 8, padding: 18, background: T.amberLight }}>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Merchants OKR</div>
+        <div style={{ fontSize: 22, fontWeight: 900, color: T.amber, marginBottom: 2 }}>20%</div>
+        <div style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>Business outcome layer</div>
+        {['DSR% - Delivery Success Rate','Merchant Tier Classification','RTO Rate (return to origin)'].map((k,i)=>(
+          <div key={i} style={{ fontSize: 11, color: T.textSec, padding: '5px 9px', background: 'rgba(255,255,255,0.75)',
+            borderRadius: 4, marginBottom: 4, borderLeft: `2px solid ${T.amber}` }}>{k}</div>
+        ))}
+        <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.75)', borderRadius: 6, padding: '10px 12px', border: `1px solid ${T.amber}30` }}>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.amber, marginBottom: 6 }}>TIER THRESHOLDS</div>
+          {[['Bad Business','red','65%'],['Default','amber','65-70%'],['Good','blue','70-75%'],['Excellent','green','>80%']].map(([label,c,range])=>(
+            <div key={label} style={{ fontSize: 10, color: T.textSec, display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
+              <span>{label}</span><span style={{ fontWeight: 700 }}>{range}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </div>
 )
 
 const LAYERS = [
-  { label:'MongoDB', role:'Operational Event Store', color:'#16A34A',
-    items:['parcel_events — scan timestamps per parcel','delivery_attempts — driver GPS, outcome, timestamp','hub_receipts — received_at, hub_id','dispatch_events — OFD assignments','merchant_orders — order metadata, address, COD'] },
-  { label:'Kafka / Debezium CDC', role:'Change Data Capture', color:'#2563EB',
-    items:['Real-time event streaming from MongoDB','Schema change detection + alerting','Dead-letter queue for failed events','30-min micro-batch fallback for non-streaming collections'] },
-  { label:'Staging (Redshift)', role:'Raw → Validated', color:'#7C3AED',
-    items:['Raw ingestion with source timestamp preserved','Data quality checks: nulls, duplicates, GPS outliers','Address normalisation enrichment','Middle-mile leakage flag (no hub receipt within 24h)'] },
-  { label:'Analytics Layer (Redshift)', role:'Fact & Dimension Tables', color:'#D97706',
-    items:['fact_deliveries — one row per attempt, all outcomes','dim_hubs, dim_stars, dim_merchants — reference','agg_heartbeat_daily — pre-computed OKR scores per hub','agg_merchant_dsr — rolling DSR per merchant × period'] },
-  { label:'HeartBeat BI', role:'Intelligence & Decision Layer', color:'#E30613',
-    items:['HeartBeat Score computation (Stars×0.30 + Hubs×0.50 + Merch×0.20)','Executive dashboard — network → city → hub drill-down','Alert engine — threshold breaches → Slack / email','Merchant portal — tier badge, DSR trend, recommendations'] },
+  { label:'MongoDB', role:'Operational Event Store', color: T.green,
+    items:['parcel_events - scan timestamps per parcel','delivery_attempts - driver GPS, outcome, timestamp','hub_receipts - received_at, hub_id','dispatch_events - OFD assignments','merchant_orders - order metadata, address, COD'] },
+  { label:'ETL Pipeline', role:'Ingestion, Transform and Validate', color: T.blue,
+    items:['Staging schema - raw ingestion with source timestamp preserved','Data quality checks: nulls, duplicates, GPS outliers','Address normalisation enrichment','Middle-mile leakage flag (no hub receipt within 24h)','30-min micro-batch refresh for operational KPIs'] },
+  { label:'Analytics Layer (Redshift)', role:'Fact and Dimension Tables', color: T.amber,
+    items:['fact_deliveries - one row per attempt, all outcomes','dim_hubs, dim_stars, dim_merchants - reference tables','agg_heartbeat_daily - pre-computed OKR scores per hub','agg_merchant_dsr - rolling DSR per merchant x period'] },
+  { label:'HeartBeat BI', role:'Intelligence and Decision Layer', color: T.red,
+    items:['HeartBeat Score: Stars x0.30 + Hubs x0.50 + Merchants x0.20','Executive dashboard - network to city to hub drill-down','Alert engine - threshold breaches sent to Slack or email','Merchant portal - tier badge, DSR trend, recommendations'] },
 ]
 
 export default function Architecture() {
   const [activeLayer, setActiveLayer] = useState(null)
 
   return (
-    <div style={{ padding:'100px 2rem 80px', maxWidth:1340, margin:'0 auto' }}>
-      <div style={{ marginBottom:10 }}>
-        <span style={{ fontSize:11, fontWeight:700, color:T.red, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 03 — Data Architecture</span>
+    <div style={{ padding: '100px 2rem 80px', maxWidth: 1340, margin: '0 auto' }}>
+      <div style={{ marginBottom: 10 }}>
+        <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Section 03: Data Architecture</span>
       </div>
-      <h2 style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', fontWeight:800, letterSpacing:'-0.03em', color:T.text, marginBottom:14 }}>
+      <h2 style={{ fontSize: 'clamp(1.8rem,3.5vw,2.8rem)', fontWeight: 800, letterSpacing: '-0.03em', color: T.text, marginBottom: 14 }}>
         From operational event to executive decision.
       </h2>
-      <p style={{ fontSize:16, color:T.textSec, lineHeight:1.8, maxWidth:700, marginBottom:48 }}>
+      <p style={{ fontSize: 16, color: T.textSec, lineHeight: 1.8, maxWidth: 700, marginBottom: 48 }}>
         Bosta already operates MongoDB for event capture and Redshift as its analytics warehouse.
-        The HeartBeat framework is a BI intelligence layer on top — no rip-and-replace, just
-        structured aggregation and a well-defined scoring model.
+        The HeartBeat framework is a BI intelligence layer on top, requiring no rip-and-replace,
+        just structured aggregation and a well-defined scoring model.
       </p>
 
-      {/* Pipeline flowchart */}
-      <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:16 }}>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
         End-to-End Data Pipeline
       </div>
-      <div style={{ marginBottom:48 }}><PipelineChart/></div>
+      <div style={{ marginBottom: 48 }}><PipelineChart /></div>
 
-      {/* Score computation tree */}
-      <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:16 }}>
-        HeartBeat Score Computation Tree
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
+        HeartBeat Score Computation
       </div>
-      <div style={{ marginBottom:48 }}><ScoreTree/></div>
+      <div style={{ marginBottom: 48 }}><ScoreTree /></div>
 
-      {/* Layer deep-dives */}
-      <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:20 }}>
-        Layer Reference — click to expand
+      {/* Layer accordion */}
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>
+        Layer Reference - click to expand
       </div>
-      <div style={{ display:'flex', flexDirection:'column', gap:2, background:T.card, border:`1px solid ${T.border}`, borderRadius:12, overflow:'hidden', boxShadow:T.shadow }}>
-        {LAYERS.map((layer,i) => {
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 2, background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, overflow: 'hidden', boxShadow: T.shadow }}>
+        {LAYERS.map((layer, i) => {
           const open = activeLayer === i
           return (
-            <div key={i} style={{ borderBottom: i < LAYERS.length-1 ? `1px solid ${T.border}` : 'none' }}>
+            <div key={i} style={{ borderBottom: i < LAYERS.length - 1 ? `1px solid ${T.border}` : 'none' }}>
               <button onClick={() => setActiveLayer(open ? null : i)}
-                style={{ width:'100%', display:'flex', alignItems:'center', gap:16, padding:'16px 24px',
-                  background: open ? T.borderSub : 'transparent', border:'none', cursor:'pointer', textAlign:'left' }}>
-                <div style={{ width:10, height:10, borderRadius:'50%', background:layer.color, flexShrink:0 }}/>
-                <div style={{ flex:1 }}>
-                  <div style={{ fontSize:14, fontWeight:700, color:T.text }}>{layer.label}</div>
-                  <div style={{ fontSize:12, color:T.textMuted }}>{layer.role}</div>
+                style={{ width: '100%', display: 'flex', alignItems: 'center', gap: 16, padding: '16px 24px',
+                  background: open ? T.cardSub : 'transparent', border: 'none', cursor: 'pointer', textAlign: 'left' }}>
+                <div style={{ width: 10, height: 10, borderRadius: '50%', background: layer.color, flexShrink: 0 }}/>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 14, fontWeight: 700, color: T.text }}>{layer.label}</div>
+                  <div style={{ fontSize: 12, color: T.textMuted }}>{layer.role}</div>
                 </div>
-                <span style={{ fontSize:14, color:T.textMuted }}>{open ? '▾' : '▸'}</span>
+                <span style={{ fontSize: 14, color: T.textMuted }}>{open ? '▾' : '▸'}</span>
               </button>
               {open && (
-                <div style={{ padding:'12px 24px 20px 54px', display:'grid', gridTemplateColumns:'repeat(2,1fr)', gap:8 }}>
-                  {layer.items.map((item,j) => (
-                    <div key={j} style={{ padding:'8px 12px', background:T.card, border:`1px solid ${T.border}`, borderRadius:6 }}>
-                      <span style={{ fontSize:12, color:T.mono, fontFamily:'monospace' }}>{item}</span>
+                <div style={{ padding: '12px 24px 20px 54px', display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 8 }}>
+                  {layer.items.map((item, j) => (
+                    <div key={j} style={{ padding: '8px 12px', background: T.card, border: `1px solid ${T.border}`, borderRadius: 6 }}>
+                      <span style={{ fontSize: 12, color: T.mono, fontFamily: 'monospace' }}>{item}</span>
                     </div>
                   ))}
                 </div>
@@ -234,15 +175,15 @@ export default function Architecture() {
       </div>
 
       {/* Design notes */}
-      <div style={{ marginTop:40, display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
+      <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
         {[
-          { title:'Middle-Mile Leakage', body:'Parcels not receiving a hub receipt scan within 24h are flagged as Middle Mile delays. Excluded from Hub KPIs but surfaced as a % alert — hubs are not penalised for upstream failure.' },
-          { title:'Latency Design', body:'Ops-facing KPIs refresh every 30 min via Kafka streaming. HeartBeat composite score computed nightly as T-1 in Redshift. Executives see yesterday\'s score, ops managers see near-real-time hub data.' },
-          { title:'Schema Governance', body:'All KPI definitions stored in Schema Registry. Any upstream MongoDB schema change triggers a validation alert before reaching the transformation layer. Prevents silent data quality degradation.' },
-        ].map((c,i) => (
-          <div key={i} style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:10, padding:20, boxShadow:T.shadow }}>
-            <div style={{ fontSize:13, fontWeight:700, color:T.text, marginBottom:8 }}>{c.title}</div>
-            <p style={{ fontSize:13, color:T.textSec, lineHeight:1.7 }}>{c.body}</p>
+          { title: 'Middle-Mile Leakage', body: 'Parcels not receiving a hub receipt scan within 24h are flagged as Middle Mile delays. Excluded from Hub KPIs but surfaced as a percentage alert. Hubs are not penalised for upstream failure.' },
+          { title: 'Latency Design', body: 'Ops-facing KPIs refresh every 30 minutes via streaming. HeartBeat composite score is computed nightly as T-1 in Redshift. Executives see prior day score; ops managers see near-real-time hub data.' },
+          { title: 'Schema Governance', body: 'All KPI definitions stored in a schema registry. Any upstream MongoDB schema change triggers a validation alert before reaching the transformation layer. Prevents silent data quality degradation.' },
+        ].map((c, i) => (
+          <div key={i} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10, padding: 20, boxShadow: T.shadow }}>
+            <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 8 }}>{c.title}</div>
+            <p style={{ fontSize: 13, color: T.textSec, lineHeight: 1.7 }}>{c.body}</p>
           </div>
         ))}
       </div>

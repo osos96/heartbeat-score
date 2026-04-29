@@ -1,9 +1,10 @@
 
 export const T = {
-  bg:        '#F8FAFC',
+  bg:        '#ECEEF2',
   card:      '#FFFFFF',
-  border:    '#E2E8F0',
-  borderSub: '#F1F5F9',
+  cardSub:   '#F4F6F9',
+  border:    '#D4DAE4',
+  borderSub: '#E9ECF3',
   text:      '#0F172A',
   textSec:   '#475569',
   textMuted: '#94A3B8',
@@ -17,6 +18,6 @@ export const T = {
   blue:      '#2563EB',
   blueLight: '#EFF6FF',
   mono:      '#334155',
-  shadow:    '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
-  shadowMd:  '0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04)',
+  shadow:    '0 1px 3px rgba(0,0,0,0.10), 0 1px 2px rgba(0,0,0,0.06)',
+  shadowMd:  '0 4px 8px rgba(0,0,0,0.09), 0 2px 4px rgba(0,0,0,0.05)',
 }
