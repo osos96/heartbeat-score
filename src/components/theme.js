@@ -1,0 +1,22 @@
+
+export const T = {
+  bg:        '#F8FAFC',
+  card:      '#FFFFFF',
+  border:    '#E2E8F0',
+  borderSub: '#F1F5F9',
+  text:      '#0F172A',
+  textSec:   '#475569',
+  textMuted: '#94A3B8',
+  red:       '#E30613',
+  redLight:  '#FEF2F2',
+  redBorder: '#FECACA',
+  green:     '#16A34A',
+  greenLight:'#F0FDF4',
+  amber:     '#D97706',
+  amberLight:'#FFFBEB',
+  blue:      '#2563EB',
+  blueLight: '#EFF6FF',
+  mono:      '#334155',
+  shadow:    '0 1px 3px rgba(0,0,0,0.07), 0 1px 2px rgba(0,0,0,0.04)',
+  shadowMd:  '0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04)',
+}

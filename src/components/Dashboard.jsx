@@ -1,12 +1,13 @@
+import { T } from './theme'
 
 import React, { useState, useMemo } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid } from 'recharts'
 import { ALL_DATA, aggregate, getTrendData, CITY_POSITIONS } from './dashboardData'
 
 const RED   = '#E30613'
-const GREEN = '#10B981'
-const AMBER = '#F59E0B'
-const BLUE  = '#3B82F6'
+const GREEN = '#16A34A'
+const AMBER = '#D97706'
+const BLUE  = '#2563EB'
 
 const hbColor = (v) => v >= 88 ? GREEN : v >= 78 ? AMBER : RED
 const hbLabel = (v) => v >= 88 ? 'Strong' : v >= 78 ? 'Caution' : 'Critical'
@@ -40,9 +41,9 @@ const GeoMap = ({ cities, onSelect, selected }) => {
   }, [cities])
 
   return (
-    <div style={{ background:'#080A10', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:20, height:'100%' }}>
-      <div style={{ fontSize:11, fontWeight:700, color:'#4B5563', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12 }}>
-        Network Geography - click city to drill
+    <div style={{ background:'#F8FAFC', border:'1px solid #E2E8F0', borderRadius:12, padding:20, height:'100%' }}>
+      <div style={{ fontSize:11, fontWeight:700, color:'#94A3B8', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12 }}>
+        Network Geography — click city to drill
       </div>
       <svg viewBox="0 0 340 320" style={{ width:'100%', maxHeight:300 }}>
         {/* Grid dots */}
@@ -97,7 +98,7 @@ const KpiBar = ({ label, value, isNeg }) => {
   return (
     <div style={{ marginBottom:9 }}>
       <div style={{ display:'flex', justifyContent:'space-between', marginBottom:3 }}>
-        <span style={{ fontSize:11, color:'#6B7280' }}>{label}</span>
+        <span style={{ fontSize:11, color:'#64748B' }}>{label}</span>
         <span style={{ fontSize:11, fontWeight:700, color:col, fontFamily:'monospace' }}>{value.toFixed(1)}%</span>
       </div>
       <div style={{ height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
@@ -110,8 +111,8 @@ const KpiBar = ({ label, value, isNeg }) => {
 const CustomTooltip = ({ active, payload, label }) => {
   if (!active || !payload?.length) return null
   return (
-    <div style={{ background:'#13151F', border:'1px solid rgba(255,255,255,0.1)', borderRadius:8, padding:'10px 14px' }}>
-      <div style={{ fontSize:11, color:'#4B5563', marginBottom:5 }}>{label}</div>
+    <div style={{ background:'#F1F5F9', border:'1px solid #E2E8F0', borderRadius:8, padding:'10px 14px' }}>
+      <div style={{ fontSize:11, color:'#94A3B8', marginBottom:5 }}>{label}</div>
       {payload.map((p,i) => (
         <div key={i} style={{ fontSize:12, color:p.color, fontWeight:600 }}>{p.name}: {p.value.toFixed(1)}%</div>
       ))}
@@ -156,9 +157,9 @@ export default function Dashboard() {
       {/* Header */}
       <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:40, flexWrap:'wrap', gap:16 }}>
         <div>
-          <span style={{ fontSize:11, fontWeight:700, color:RED, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 04 - Live Demo</span>
+          <span style={{ fontSize:11, fontWeight:700, color:RED, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 04 — Live Demo</span>
           <h2 style={{ fontSize:'clamp(1.6rem,3vw,2.4rem)', fontWeight:800, letterSpacing:'-0.03em', marginTop:6 }}>HeartBeat Dashboard</h2>
-          <p style={{ color:'#4B5563', fontSize:13, marginTop:4 }}>Simulated network data · Click city nodes on the map or rows in the table to drill down</p>
+          <p style={{ color:'#94A3B8', fontSize:13, marginTop:4 }}>Simulated network data · Click city nodes on the map or rows in the table to drill down</p>
         </div>
         <div style={{ display:'flex', gap:8 }}>
           {[7,30,90].map(d=>(
@@ -173,22 +174,22 @@ export default function Dashboard() {
       </div>
 
       {/* ── Hero HeartBeat + Three Pillars ── */}
-      <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:20, marginBottom:24, background:'#0D0F18', border:`1px solid rgba(227,6,19,0.15)`, borderRadius:14, padding:28, borderTop:`3px solid ${RED}` }}>
+      <div style={{ display:'grid', gridTemplateColumns:'auto 1fr', gap:20, marginBottom:24, background:'#FFFFFF', border:`1px solid #FECACA`, borderRadius:14, padding:28, borderTop:`3px solid ${RED}` }}>
         {/* HeartBeat hero */}
         <div style={{ display:'flex', alignItems:'center', gap:20, paddingRight:28, borderRight:'1px solid rgba(255,255,255,0.07)' }}>
           <div style={{ position:'relative', width:110, height:110 }}>
             <Ring value={hb} size={110} stroke={9}/>
             <div style={{ position:'absolute', top:'50%', left:'50%', transform:'translate(-50%,-50%)', textAlign:'center' }}>
-              <div style={{ fontSize:10, color:'#4B5563', fontWeight:700, letterSpacing:'0.06em' }}>HB</div>
+              <div style={{ fontSize:10, color:'#94A3B8', fontWeight:700, letterSpacing:'0.06em' }}>HB</div>
               <div style={{ fontSize:20, fontWeight:900, color:'#fff', lineHeight:1 }}>{hb.toFixed(0)}</div>
             </div>
           </div>
           <div>
-            <div style={{ fontSize:11, fontWeight:700, color:'#4B5563', textTransform:'uppercase', letterSpacing:'0.08em' }}>HeartBeat Score</div>
+            <div style={{ fontSize:11, fontWeight:700, color:'#94A3B8', textTransform:'uppercase', letterSpacing:'0.08em' }}>HeartBeat Score</div>
             <div style={{ fontSize:42, fontWeight:900, color:hbColor(hb), letterSpacing:'-0.04em', lineHeight:1 }}>{hb.toFixed(1)}%</div>
             <div style={{ display:'flex', alignItems:'center', gap:6, marginTop:6 }}>
               <span style={{ fontSize:12, fontWeight:700, color:delta>=0?GREEN:RED }}>{delta>=0?'▲':'▼'} {Math.abs(delta).toFixed(1)}%</span>
-              <span style={{ fontSize:11, color:'#4B5563' }}>vs prev {period}d</span>
+              <span style={{ fontSize:11, color:'#94A3B8' }}>vs prev {period}d</span>
               <span style={{ marginLeft:8, fontSize:11, fontWeight:700, padding:'2px 8px', borderRadius:4, background:`${hbColor(hb)}18`, color:hbColor(hb) }}>{hbLabel(hb)}</span>
             </div>
           </div>
@@ -204,16 +205,16 @@ export default function Dashboard() {
             const val = p.key==='scStars'?stars:p.key==='scHubs'?hubs:merch
             const col = p.color
             return (
-              <div key={p.key} style={{ padding:16, borderRadius:10, background:'rgba(0,0,0,0.3)', border:'1px solid rgba(255,255,255,0.05)' }}>
+              <div key={p.key} style={{ padding:16, borderRadius:10, background:'#F1F5F9', border:'1px solid #E2E8F0' }}>
                 <div style={{ display:'flex', justifyContent:'space-between', marginBottom:10 }}>
-                  <span style={{ fontSize:11, fontWeight:700, color:'#6B7280', textTransform:'uppercase', letterSpacing:'0.06em' }}>{p.label}</span>
-                  <span style={{ fontSize:10, color:'#374151', fontWeight:700 }}>{p.weight}</span>
+                  <span style={{ fontSize:11, fontWeight:700, color:'#64748B', textTransform:'uppercase', letterSpacing:'0.06em' }}>{p.label}</span>
+                  <span style={{ fontSize:10, color:'#94A3B8', fontWeight:700 }}>{p.weight}</span>
                 </div>
-                <div style={{ fontSize:28, fontWeight:900, color:'#E8EAF0', letterSpacing:'-0.03em' }}>{val.toFixed(1)}%</div>
+                <div style={{ fontSize:28, fontWeight:900, color:'#0F172A', letterSpacing:'-0.03em' }}>{val.toFixed(1)}%</div>
                 <div style={{ marginTop:10, height:3, background:'rgba(255,255,255,0.05)', borderRadius:2 }}>
                   <div style={{ height:'100%', width:`${val}%`, background:col, borderRadius:2, transition:'width 0.5s' }}/>
                 </div>
-                <div style={{ fontSize:10, color:'#4B5563', marginTop:6 }}>{p.desc}</div>
+                <div style={{ fontSize:10, color:'#94A3B8', marginTop:6 }}>{p.desc}</div>
               </div>
             )
           })}
@@ -224,9 +225,9 @@ export default function Dashboard() {
       <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:16, marginBottom:24 }}>
         <GeoMap cities={cities} onSelect={handleMapSelect} selected={mapSelected}/>
 
-        <div style={{ background:'#0D0F18', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:20 }}>
+        <div style={{ background:'#FFFFFF', border:'1px solid #E2E8F0', borderRadius:12, padding:20 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-            <span style={{ fontSize:11, fontWeight:700, color:'#4B5563', textTransform:'uppercase', letterSpacing:'0.08em' }}>Score Trend - {period}d</span>
+            <span style={{ fontSize:11, fontWeight:700, color:'#94A3B8', textTransform:'uppercase', letterSpacing:'0.08em' }}>Score Trend — {period}d</span>
             <button onClick={()=>setShowTrend(v=>!v)} style={{ fontSize:11, color: showTrend ? RED : '#4B5563', background:'transparent', border:'none', cursor:'pointer', fontWeight:700 }}>
               {showTrend ? 'Hide' : 'Show'} pillar lines
             </button>
@@ -234,8 +235,8 @@ export default function Dashboard() {
           <ResponsiveContainer width="100%" height={220}>
             <LineChart data={trendData}>
               <CartesianGrid stroke="rgba(255,255,255,0.03)" vertical={false}/>
-              <XAxis dataKey="date" tick={{fontSize:9,fill:'#374151'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/>
-              <YAxis domain={[60,100]} tick={{fontSize:9,fill:'#374151'}} axisLine={false} tickLine={false} width={28}/>
+              <XAxis dataKey="date" tick={{fontSize:9,fill:'#94A3B8'}} axisLine={false} tickLine={false} interval="preserveStartEnd"/>
+              <YAxis domain={[60,100]} tick={{fontSize:9,fill:'#94A3B8'}} axisLine={false} tickLine={false} width={28}/>
               <Tooltip content={<CustomTooltip/>}/>
               <Line type="monotone" dataKey="scHB" name="HeartBeat" stroke={RED} strokeWidth={2.5} dot={false}/>
               {showTrend && <>
@@ -249,11 +250,11 @@ export default function Dashboard() {
       </div>
 
       {/* ── Hierarchical drill table ── */}
-      <div style={{ background:'#0D0F18', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, overflow:'hidden' }}>
+      <div style={{ background:'#FFFFFF', border:'1px solid #E2E8F0', borderRadius:12, overflow:'hidden' }}>
         {/* Header */}
-        <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 90px 90px', gap:8, padding:'14px 24px', borderBottom:'1px solid rgba(255,255,255,0.05)' }}>
+        <div style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 90px 90px', gap:8, padding:'14px 24px', borderBottom:'1px solid #E2E8F0' }}>
           {['Location','HeartBeat','Stars','Hubs','Merchants'].map(h=>(
-            <div key={h} style={{ fontSize:10, fontWeight:700, color:'#374151', textTransform:'uppercase', letterSpacing:'0.08em' }}>{h}</div>
+            <div key={h} style={{ fontSize:10, fontWeight:700, color:'#94A3B8', textTransform:'uppercase', letterSpacing:'0.08em' }}>{h}</div>
           ))}
         </div>
 
@@ -264,11 +265,11 @@ export default function Dashboard() {
               <div onClick={()=>{setExpandedCity(ce?null:city.name);setExpandedZone(null);setExpandedHub(null);setMapSelected(ce?null:city.name)}}
                 style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 90px 90px', gap:8, padding:'13px 24px',
                   background: ce ? 'rgba(227,6,19,0.04)' : 'transparent',
-                  borderBottom:'1px solid rgba(255,255,255,0.04)', cursor:'pointer', transition:'background 0.2s' }}>
+                  borderBottom:'1px solid #F1F5F9', cursor:'pointer', transition:'background 0.2s' }}>
                 <div style={{ display:'flex', alignItems:'center', gap:10 }}>
                   <span style={{ fontSize:13, color: ce ? RED : '#4B5563' }}>{ce?'▾':'▸'}</span>
-                  <span style={{ fontWeight:700, fontSize:14, color:'#E8EAF0' }}>{city.name}</span>
-                  <span style={{ fontSize:10, color:'#374151' }}>{city.zones?.length} zones</span>
+                  <span style={{ fontWeight:700, fontSize:14, color:'#0F172A' }}>{city.name}</span>
+                  <span style={{ fontSize:10, color:'#94A3B8' }}>{city.zones?.length} zones</span>
                 </div>
                 <div style={{ fontWeight:800, fontSize:15, color:hbColor(city.scHB||0) }}>{(city.scHB||0).toFixed(1)}%</div>
                 <div style={{ fontSize:13, color:hbColor(city.scStars||0) }}>{(city.scStars||0).toFixed(1)}%</div>
@@ -283,11 +284,11 @@ export default function Dashboard() {
                     <div onClick={()=>{setExpandedZone(ze?null:zone.name);setExpandedHub(null)}}
                       style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 90px 90px', gap:8, padding:'11px 24px 11px 44px',
                         background: ze ? 'rgba(59,130,246,0.04)' : 'rgba(0,0,0,0.2)',
-                        borderBottom:'1px solid rgba(255,255,255,0.03)', cursor:'pointer' }}>
+                        borderBottom:'1px solid #F1F5F9', cursor:'pointer' }}>
                       <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                        <span style={{ fontSize:11, color:'#374151' }}>{ze?'▾':'▸'}</span>
-                        <span style={{ fontWeight:600, fontSize:13, color:'#9CA3AF' }}>{zone.name}</span>
-                        <span style={{ fontSize:10, color:'#374151' }}>{zone.hubsList?.length} hubs</span>
+                        <span style={{ fontSize:11, color:'#94A3B8' }}>{ze?'▾':'▸'}</span>
+                        <span style={{ fontWeight:600, fontSize:13, color:'#475569' }}>{zone.name}</span>
+                        <span style={{ fontSize:10, color:'#94A3B8' }}>{zone.hubsList?.length} hubs</span>
                       </div>
                       <div style={{ fontWeight:700, fontSize:13, color:hbColor(zone.scHB||0) }}>{(zone.scHB||0).toFixed(1)}%</div>
                       <div style={{ fontSize:12, color:hbColor(zone.scStars||0) }}>{(zone.scStars||0).toFixed(1)}%</div>
@@ -302,10 +303,10 @@ export default function Dashboard() {
                           <div onClick={()=>setExpandedHub(he?null:hub.id)}
                             style={{ display:'grid', gridTemplateColumns:'1fr 110px 90px 90px 90px', gap:8, padding:'9px 24px 9px 68px',
                               background: he ? 'rgba(16,185,129,0.03)' : 'rgba(0,0,0,0.3)',
-                              borderBottom:'1px solid rgba(255,255,255,0.02)', cursor:'pointer' }}>
+                              borderBottom:'1px solid #F1F5F9', cursor:'pointer' }}>
                             <div style={{ display:'flex', alignItems:'center', gap:8 }}>
-                              <span style={{ fontSize:10, color:'#374151' }}>{he?'▾':'▸'}</span>
-                              <span style={{ fontSize:12, color:'#6B7280' }}>{hub.name}</span>
+                              <span style={{ fontSize:10, color:'#94A3B8' }}>{he?'▾':'▸'}</span>
+                              <span style={{ fontSize:12, color:'#64748B' }}>{hub.name}</span>
                             </div>
                             <div style={{ fontWeight:700, fontSize:12, color:hbColor(hub.scHB||0) }}>{(hub.scHB||0).toFixed(1)}%</div>
                             <div style={{ fontSize:11, color:hbColor(hub.scStars||0) }}>{(hub.scStars||0).toFixed(1)}%</div>
@@ -314,18 +315,18 @@ export default function Dashboard() {
                           </div>
 
                           {he && (
-                            <div style={{ padding:'20px 24px 20px 84px', background:'#080A10', borderBottom:'1px solid rgba(255,255,255,0.04)' }}>
+                            <div style={{ padding:'20px 24px 20px 84px', background:'#F8FAFC', borderBottom:'1px solid #F1F5F9' }}>
                               <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
                                 <div>
-                                  <div style={{ fontSize:10, fontWeight:700, color:GREEN, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>Stars KPIs</div>
-                                  <KpiBar label="ASR - Attempt Success" value={hub.asr||0}/>
-                                  <KpiBar label="FDDS - First Day Delivery" value={hub.fdds||0}/>
+                                  <div style={{ fontSize:10, fontWeight:700, color:GREEN, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid #E2E8F0' }}>Stars KPIs</div>
+                                  <KpiBar label="ASR — Attempt Success" value={hub.asr||0}/>
+                                  <KpiBar label="FDDS — First Day Delivery" value={hub.fdds||0}/>
                                   <KpiBar label="OFD / Star" value={hub.ofd||0}/>
-                                  <KpiBar label="CRP - Return Pickups" value={hub.crp||0}/>
+                                  <KpiBar label="CRP — Return Pickups" value={hub.crp||0}/>
                                   <KpiBar label="Fake Attempt Rate" value={hub.fake||0} isNeg/>
                                 </div>
                                 <div>
-                                  <div style={{ fontSize:10, fontWeight:700, color:BLUE, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>Hub KPIs</div>
+                                  <div style={{ fontSize:10, fontWeight:700, color:BLUE, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid #E2E8F0' }}>Hub KPIs</div>
                                   <KpiBar label="Delivery Promised" value={hub.delPromised||0}/>
                                   <KpiBar label="Same-Day Dispatch" value={hub.dispatch||0}/>
                                   <KpiBar label="Cycle Adaptation" value={hub.cycle||0}/>
@@ -334,10 +335,10 @@ export default function Dashboard() {
                                   <KpiBar label="Damaged Rate" value={hub.damaged||0} isNeg/>
                                 </div>
                                 <div>
-                                  <div style={{ fontSize:10, fontWeight:700, color:AMBER, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>Merchants</div>
-                                  <KpiBar label="DSR - Delivery Success" value={hub.dsr||0}/>
-                                  <div style={{ marginTop:16, padding:12, background:'rgba(255,255,255,0.02)', borderRadius:8, border:'1px solid rgba(255,255,255,0.05)' }}>
-                                    <div style={{ fontSize:10, color:'#374151', marginBottom:5, fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' }}>Merchant Tier</div>
+                                  <div style={{ fontSize:10, fontWeight:700, color:AMBER, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid #E2E8F0' }}>Merchants</div>
+                                  <KpiBar label="DSR — Delivery Success" value={hub.dsr||0}/>
+                                  <div style={{ marginTop:16, padding:12, background:'#F8FAFC', borderRadius:8, border:'1px solid #E2E8F0' }}>
+                                    <div style={{ fontSize:10, color:'#94A3B8', marginBottom:5, fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' }}>Merchant Tier</div>
                                     {(hub.dsr||0)>80 ? <span style={{color:GREEN,fontWeight:700,fontSize:13}}>Excellent (&gt;80%)</span>
                                     :(hub.dsr||0)>=75? <span style={{color:'#34D399',fontWeight:700,fontSize:13}}>Very Good (75–80%)</span>
                                     :(hub.dsr||0)>=70? <span style={{color:BLUE,fontWeight:700,fontSize:13}}>Good (70–75%)</span>
