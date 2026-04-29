@@ -1,94 +1,89 @@
 
 import React, { useEffect, useState } from 'react'
 
-const PULSE_WORDS = ['inconsistent', 'fragmented', 'unclear', 'conflicting', 'reactive']
+const PULSE_WORDS = ['inconsistent','fragmented','unmeasured','conflicting','reactive']
 
 export default function Hero() {
   const [wordIdx, setWordIdx] = useState(0)
-  const [fade, setFade] = useState(true)
+  const [visible, setVisible] = useState(true)
 
   useEffect(() => {
     const t = setInterval(() => {
-      setFade(false)
-      setTimeout(() => { setWordIdx(i => (i + 1) % PULSE_WORDS.length); setFade(true) }, 300)
-    }, 2200)
+      setVisible(false)
+      setTimeout(() => { setWordIdx(i => (i+1) % PULSE_WORDS.length); setVisible(true) }, 280)
+    }, 2400)
     return () => clearInterval(t)
   }, [])
 
   return (
-    <div style={{
-      minHeight: '100vh', display: 'flex', flexDirection: 'column', justifyContent: 'center',
-      padding: '100px 2rem 4rem', maxWidth: 1300, margin: '0 auto',
-    }}>
-      <div style={{ maxWidth: 820 }}>
-        <div style={{
-          display: 'inline-flex', alignItems: 'center', gap: 8,
-          background: 'rgba(227,6,19,0.08)', border: '1px solid rgba(227,6,19,0.25)',
-          borderRadius: 20, padding: '6px 14px', marginBottom: 32,
-        }}>
-          <div style={{ width: 8, height: 8, borderRadius: '50%', background: '#E30613', animation: 'pulse 1.5s infinite' }} />
-          <span style={{ fontSize: 12, fontWeight: 600, color: '#E30613', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+    <div style={{ minHeight:'100vh', display:'flex', flexDirection:'column', justifyContent:'center', padding:'100px 2rem 4rem', maxWidth:1300, margin:'0 auto' }}>
+      <div style={{ maxWidth:820 }}>
+
+        <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(227,6,19,0.07)', border:'1px solid rgba(227,6,19,0.2)', borderRadius:20, padding:'5px 14px', marginBottom:32 }}>
+          <div style={{ width:7, height:7, borderRadius:'50%', background:'#E30613', animation:'hbpulse 1.5s ease-in-out infinite' }} />
+          <span style={{ fontSize:11, fontWeight:700, color:'#E30613', letterSpacing:'0.1em', textTransform:'uppercase' }}>
             Data Analytics &amp; BI Manager — Strategic Case Study
           </span>
         </div>
 
-        <h1 style={{ fontSize: 'clamp(2.4rem, 5vw, 4rem)', fontWeight: 900, lineHeight: 1.08, letterSpacing: '-0.03em', marginBottom: 28 }}>
+        {/* Fixed-height heading block: the animated word sits in a reserved inline-block */}
+        <h1 style={{ fontSize:'clamp(2.2rem,4.5vw,3.6rem)', fontWeight:900, lineHeight:1.1, letterSpacing:'-0.03em', marginBottom:28 }}>
           Your DSR isn't{' '}
+          {/* The reserved container: width fixed to the longest word, height = one line */}
           <span style={{
-            color: '#E30613', display: 'inline-block', minWidth: 180,
-            opacity: fade ? 1 : 0, transition: 'opacity 0.3s ease'
+            display:'inline-block',
+            width:'9ch',               /* longest word is ~13 chars but we clip to 1 line */
+            verticalAlign:'bottom',
+            overflow:'hidden',
+            whiteSpace:'nowrap',
           }}>
-            {PULSE_WORDS[wordIdx]}.
+            <span style={{
+              display:'inline-block',
+              color:'#E30613',
+              opacity: visible ? 1 : 0,
+              transform: visible ? 'translateY(0)' : 'translateY(6px)',
+              transition:'opacity 0.28s ease, transform 0.28s ease',
+            }}>
+              {PULSE_WORDS[wordIdx]}.
+            </span>
           </span>
           <br />
-          It's <span style={{ color: '#E30613' }}>unmeasured.</span>
+          It's <span style={{ color:'#E30613' }}>unmeasured.</span>
         </h1>
 
-        <p style={{ fontSize: 17, color: '#9CA3AF', lineHeight: 1.75, maxWidth: 640, marginBottom: 48 }}>
+        <p style={{ fontSize:16, color:'#6B7280', lineHeight:1.8, maxWidth:620, marginBottom:48 }}>
           Three departments pointing in different directions isn't a disagreement about root causes —
           it's the symptom of a missing unified operational intelligence layer.
-          The HeartBeat Score framework brings one composite view to the entire last-mile network,
-          from driver attempt to hub dispatch to merchant health, so leadership stops debating and starts deciding.
+          The HeartBeat Score framework resolves this: one composite view of the entire last-mile network,
+          from driver attempt quality to hub throughput to merchant delivery health.
         </p>
 
-        <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap' }}>
-          <a href="#problem" style={{
-            padding: '14px 28px', background: '#E30613', color: '#fff',
-            borderRadius: 8, fontWeight: 700, fontSize: 15, textDecoration: 'none',
-            border: 'none', cursor: 'pointer', letterSpacing: '-0.01em',
-          }}>See the Problem Decomposition →</a>
-          <a href="#dashboard" style={{
-            padding: '14px 28px', background: 'transparent', color: '#E8EAF0',
-            borderRadius: 8, fontWeight: 600, fontSize: 15, textDecoration: 'none',
-            border: '1px solid rgba(255,255,255,0.15)', cursor: 'pointer',
-          }}>Open Live Dashboard</a>
+        <div style={{ display:'flex', gap:14, flexWrap:'wrap' }}>
+          <a href="#problem" style={{ padding:'13px 26px', background:'#E30613', color:'#fff', borderRadius:8, fontWeight:700, fontSize:14, textDecoration:'none', letterSpacing:'-0.01em' }}>
+            View Problem Decomposition →
+          </a>
+          <a href="#dashboard" style={{ padding:'13px 26px', background:'transparent', color:'#9CA3AF', borderRadius:8, fontWeight:600, fontSize:14, textDecoration:'none', border:'1px solid rgba(255,255,255,0.12)' }}>
+            Open Live Dashboard
+          </a>
         </div>
       </div>
 
-      <div style={{
-        marginTop: 80, display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1,
-        background: 'rgba(255,255,255,0.06)', borderRadius: 12, overflow: 'hidden',
-        border: '1px solid rgba(255,255,255,0.07)',
-      }}>
+      {/* Stat strip */}
+      <div style={{ marginTop:72, display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:1, background:'rgba(255,255,255,0.05)', borderRadius:12, overflow:'hidden', border:'1px solid rgba(255,255,255,0.06)' }}>
         {[
-          { num: '3', label: 'Conflicting department theories', sub: 'Unified under one framework' },
-          { num: '15+', label: 'Operational KPIs tracked', sub: 'Across Stars, Hubs & Merchants' },
-          { num: '1', label: 'Composite health score', sub: 'From driver to network level' },
-        ].map((stat, i) => (
-          <div key={i} style={{ padding: '28px 32px', background: '#0D0F18' }}>
-            <div style={{ fontSize: 'clamp(2rem, 4vw, 2.8rem)', fontWeight: 900, color: '#E30613', letterSpacing: '-0.04em' }}>{stat.num}</div>
-            <div style={{ fontSize: 14, fontWeight: 600, color: '#E8EAF0', marginTop: 6 }}>{stat.label}</div>
-            <div style={{ fontSize: 12, color: '#6B7280', marginTop: 4 }}>{stat.sub}</div>
+          { num:'3', label:'Conflicting department theories', sub:'Unified under one framework' },
+          { num:'15+', label:'Operational KPIs tracked', sub:'Across Stars, Hubs & Merchants' },
+          { num:'1', label:'Composite health score', sub:'Network to hub level granularity' },
+        ].map((s,i) => (
+          <div key={i} style={{ padding:'26px 30px', background:'#0D0F18' }}>
+            <div style={{ fontSize:'clamp(1.8rem,3.5vw,2.5rem)', fontWeight:900, color:'#E30613', letterSpacing:'-0.04em' }}>{s.num}</div>
+            <div style={{ fontSize:13, fontWeight:600, color:'#E8EAF0', marginTop:6 }}>{s.label}</div>
+            <div style={{ fontSize:11, color:'#4B5563', marginTop:3 }}>{s.sub}</div>
           </div>
         ))}
       </div>
 
-      <style>{`
-        @keyframes pulse {
-          0%, 100% { opacity: 1; transform: scale(1); }
-          50% { opacity: 0.5; transform: scale(1.4); }
-        }
-      `}</style>
+      <style>{`@keyframes hbpulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(1.5)} }`}</style>
     </div>
   )
 }
