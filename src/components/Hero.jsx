@@ -22,7 +22,7 @@ export default function Hero() {
         <div style={{ display:'inline-flex', alignItems:'center', gap:8, background:'rgba(227,6,19,0.07)', border:'1px solid rgba(227,6,19,0.2)', borderRadius:20, padding:'5px 14px', marginBottom:32 }}>
           <div style={{ width:7, height:7, borderRadius:'50%', background:'#E30613', animation:'hbpulse 1.5s ease-in-out infinite' }} />
           <span style={{ fontSize:11, fontWeight:700, color:'#E30613', letterSpacing:'0.1em', textTransform:'uppercase' }}>
-            Data Analytics &amp; BI Manager — Strategic Case Study
+            Data Analytics &amp; BI Manager - Strategic Case Study
           </span>
         </div>
 
@@ -52,7 +52,7 @@ export default function Hero() {
         </h1>
 
         <p style={{ fontSize:16, color:'#6B7280', lineHeight:1.8, maxWidth:620, marginBottom:48 }}>
-          Three departments pointing in different directions isn't a disagreement about root causes —
+          Three departments pointing in different directions isn't a disagreement about root causes -
           it's the symptom of a missing unified operational intelligence layer.
           The HeartBeat Score framework resolves this: one composite view of the entire last-mile network,
           from driver attempt quality to hub throughput to merchant delivery health.

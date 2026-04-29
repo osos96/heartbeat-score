@@ -16,12 +16,12 @@ const DRIVER_TREE = {
     {
       label: 'Stars OKR (30%)', color: '#10B981',
       children: [
-        { label: 'ASR% — Attempt Success Rate', color: '#10B981', weight: '30%' },
-        { label: 'FDDS% — First Day Delivery', color: '#10B981', weight: '20%' },
-        { label: 'OFD/Star — Volume per Driver', color: '#10B981', weight: '20%' },
+        { label: 'ASR% - Attempt Success Rate', color: '#10B981', weight: '30%' },
+        { label: 'FDDS% - First Day Delivery', color: '#10B981', weight: '20%' },
+        { label: 'OFD/Star - Volume per Driver', color: '#10B981', weight: '20%' },
         { label: 'Fake Attempt Rate ↓', color: '#EF4444', weight: '10%' },
-        { label: 'CRP% — Return Pickups', color: '#10B981', weight: '10%' },
-        { label: 'CRE% — Exchange Rate', color: '#10B981', weight: '10%' },
+        { label: 'CRP% - Return Pickups', color: '#10B981', weight: '10%' },
+        { label: 'CRE% - Exchange Rate', color: '#10B981', weight: '10%' },
       ]
     },
     {
@@ -66,7 +66,7 @@ export default function Problem() {
         One problem.<br /><span style={{ color: '#6B7280' }}>Three labels for the same gap.</span>
       </h2>
       <p style={{ color: '#6B7280', fontSize: 15, maxWidth: 580, marginBottom: 64, lineHeight: 1.7 }}>
-        Operations, Product, and Customer Service aren't disagreeing — they're each describing a different facet of the same missing layer: real-time operational visibility across the full delivery chain.
+        Operations, Product, and Customer Service aren't disagreeing - they're each describing a different facet of the same missing layer: real-time operational visibility across the full delivery chain.
       </p>
 
       {/* Department theories */}
@@ -130,14 +130,14 @@ export default function Problem() {
       {/* DSR Driver Tree */}
       <div style={{ marginTop: 64 }}>
         <div style={{ fontSize: 12, fontWeight: 700, color: '#6B7280', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 32 }}>
-          DSR Driver Tree — HeartBeat Decomposition
+          DSR Driver Tree - HeartBeat Decomposition
         </div>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           {/* Root */}
           <div style={{
             background: 'rgba(227,6,19,0.12)', border: '2px solid #E30613',
             borderRadius: 10, padding: '12px 32px', fontWeight: 800, fontSize: 16, color: '#fff', marginBottom: 32,
-          }}>DSR — Delivery Success Rate</div>
+          }}>DSR - Delivery Success Rate</div>
 
           {/* Three pillars */}
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 24, width: '100%' }}>

@@ -60,7 +60,7 @@ export default function Architecture() {
       </h2>
       <p style={{ color: '#6B7280', fontSize: 15, maxWidth: 580, marginBottom: 64, lineHeight: 1.7 }}>
         Bosta already runs MongoDB for operational events and Redshift as the analytical warehouse.
-        The HeartBeat framework sits as a BI layer on top — no rip-and-replace, just intelligent aggregation.
+        The HeartBeat framework sits as a BI layer on top - no rip-and-replace, just intelligent aggregation.
         Click any layer to explore what lives there.
       </p>
 
@@ -113,7 +113,7 @@ export default function Architecture() {
         </div>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Middle-Mile Visibility</div>
-          <p style={{ fontSize: 13, color: '#9CA3AF', lineHeight: 1.6 }}>Parcels not marked "received at hub" are tracked as Middle Mile leakage — excluded from hub KPIs but surfaced as a % metric to avoid penalizing hubs for upstream failures.</p>
+          <p style={{ fontSize: 13, color: '#9CA3AF', lineHeight: 1.6 }}>Parcels not marked "received at hub" are tracked as Middle Mile leakage - excluded from hub KPIs but surfaced as a % metric to avoid penalizing hubs for upstream failures.</p>
         </div>
         <div>
           <div style={{ fontSize: 12, fontWeight: 700, color: '#3B82F6', textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Latency Target</div>

@@ -32,8 +32,8 @@ const DAYS = [
   {
     phase: '0–30 Days', label: 'Diagnose', color: '#E30613',
     items: [
-      'Audit existing Redshift schema — map available fields to HeartBeat KPI requirements',
-      'Interview Ops, Product, CS leads — validate KPI definitions and confirm data ownership',
+      'Audit existing Redshift schema - map available fields to HeartBeat KPI requirements',
+      'Interview Ops, Product, CS leads - validate KPI definitions and confirm data ownership',
       'Deploy HeartBeat dashboard in read-only mode with available data',
       'Run H1 hypothesis test (backlog vs DSR correlation) as quick win proof point',
       'Identify top 3 data gaps and build ETL patch plan with engineering',
@@ -43,7 +43,7 @@ const DAYS = [
     phase: '30–60 Days', label: 'Build', color: '#3B82F6',
     items: [
       'Complete ETL pipeline for missing KPIs (Fake Attempt, CRP, CRE from MongoDB events)',
-      'Run H2 and H3 hypothesis tests — present findings to Ops, Product, CS heads',
+      'Run H2 and H3 hypothesis tests - present findings to Ops, Product, CS heads',
       'Launch HeartBeat score as official network health metric in weekly leadership review',
       'Build alert engine: Backlog > 12% → Ops alert; Delivery Promised < 85% → CS brief',
       'Train hub managers on KPI definitions and score accountability',

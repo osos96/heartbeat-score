@@ -6,12 +6,12 @@ const PILLARS = [
     id: 'stars', label: 'Stars', weight: 30, color: '#10B981', icon: '🚴',
     tagline: 'The last mile is only as strong as the person riding it.',
     kpis: [
-      { name: 'ASR% — Attempt Success Rate', weight: 30, desc: 'Core driver output. % of OFD parcels successfully delivered on first attempt.', isNeg: false },
-      { name: 'FDDS% — First Day Delivery', weight: 20, desc: 'Parcels delivered on the same day they first go OFD. Indicator of route quality.', isNeg: false },
+      { name: 'ASR% - Attempt Success Rate', weight: 30, desc: 'Core driver output. % of OFD parcels successfully delivered on first attempt.', isNeg: false },
+      { name: 'FDDS% - First Day Delivery', weight: 20, desc: 'Parcels delivered on the same day they first go OFD. Indicator of route quality.', isNeg: false },
       { name: 'OFD / Star', weight: 20, desc: 'Average daily parcel volume per driver per hub. Measures capacity utilization.', isNeg: false },
       { name: 'Fake Attempt Rate', weight: 10, desc: 'Attempts logged without genuine contact. High fake rate destroys DSR and customer trust.', isNeg: true },
-      { name: 'CRP% — Customer Return Pickups', weight: 10, desc: '% of return pickup requests fulfilled. Measures reverse-logistics driver responsiveness.', isNeg: false },
-      { name: 'CRE% — Customer Exchange Rate', weight: 10, desc: '% of exchange requests handled. Combines return + redelivery in one trip.', isNeg: false },
+      { name: 'CRP% - Customer Return Pickups', weight: 10, desc: '% of return pickup requests fulfilled. Measures reverse-logistics driver responsiveness.', isNeg: false },
+      { name: 'CRE% - Customer Exchange Rate', weight: 10, desc: '% of exchange requests handled. Combines return + redelivery in one trip.', isNeg: false },
     ]
   },
   {

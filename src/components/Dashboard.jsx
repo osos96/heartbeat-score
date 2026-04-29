@@ -42,7 +42,7 @@ const GeoMap = ({ cities, onSelect, selected }) => {
   return (
     <div style={{ background:'#080A10', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:20, height:'100%' }}>
       <div style={{ fontSize:11, fontWeight:700, color:'#4B5563', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:12 }}>
-        Network Geography — click city to drill
+        Network Geography - click city to drill
       </div>
       <svg viewBox="0 0 340 320" style={{ width:'100%', maxHeight:300 }}>
         {/* Grid dots */}
@@ -156,7 +156,7 @@ export default function Dashboard() {
       {/* Header */}
       <div style={{ display:'flex', alignItems:'flex-end', justifyContent:'space-between', marginBottom:40, flexWrap:'wrap', gap:16 }}>
         <div>
-          <span style={{ fontSize:11, fontWeight:700, color:RED, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 04 — Live Demo</span>
+          <span style={{ fontSize:11, fontWeight:700, color:RED, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 04 - Live Demo</span>
           <h2 style={{ fontSize:'clamp(1.6rem,3vw,2.4rem)', fontWeight:800, letterSpacing:'-0.03em', marginTop:6 }}>HeartBeat Dashboard</h2>
           <p style={{ color:'#4B5563', fontSize:13, marginTop:4 }}>Simulated network data · Click city nodes on the map or rows in the table to drill down</p>
         </div>
@@ -226,7 +226,7 @@ export default function Dashboard() {
 
         <div style={{ background:'#0D0F18', border:'1px solid rgba(255,255,255,0.06)', borderRadius:12, padding:20 }}>
           <div style={{ display:'flex', justifyContent:'space-between', alignItems:'center', marginBottom:16 }}>
-            <span style={{ fontSize:11, fontWeight:700, color:'#4B5563', textTransform:'uppercase', letterSpacing:'0.08em' }}>Score Trend — {period}d</span>
+            <span style={{ fontSize:11, fontWeight:700, color:'#4B5563', textTransform:'uppercase', letterSpacing:'0.08em' }}>Score Trend - {period}d</span>
             <button onClick={()=>setShowTrend(v=>!v)} style={{ fontSize:11, color: showTrend ? RED : '#4B5563', background:'transparent', border:'none', cursor:'pointer', fontWeight:700 }}>
               {showTrend ? 'Hide' : 'Show'} pillar lines
             </button>
@@ -318,10 +318,10 @@ export default function Dashboard() {
                               <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:20 }}>
                                 <div>
                                   <div style={{ fontSize:10, fontWeight:700, color:GREEN, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>Stars KPIs</div>
-                                  <KpiBar label="ASR — Attempt Success" value={hub.asr||0}/>
-                                  <KpiBar label="FDDS — First Day Delivery" value={hub.fdds||0}/>
+                                  <KpiBar label="ASR - Attempt Success" value={hub.asr||0}/>
+                                  <KpiBar label="FDDS - First Day Delivery" value={hub.fdds||0}/>
                                   <KpiBar label="OFD / Star" value={hub.ofd||0}/>
-                                  <KpiBar label="CRP — Return Pickups" value={hub.crp||0}/>
+                                  <KpiBar label="CRP - Return Pickups" value={hub.crp||0}/>
                                   <KpiBar label="Fake Attempt Rate" value={hub.fake||0} isNeg/>
                                 </div>
                                 <div>
@@ -335,7 +335,7 @@ export default function Dashboard() {
                                 </div>
                                 <div>
                                   <div style={{ fontSize:10, fontWeight:700, color:AMBER, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:12, paddingBottom:8, borderBottom:'1px solid rgba(255,255,255,0.05)' }}>Merchants</div>
-                                  <KpiBar label="DSR — Delivery Success" value={hub.dsr||0}/>
+                                  <KpiBar label="DSR - Delivery Success" value={hub.dsr||0}/>
                                   <div style={{ marginTop:16, padding:12, background:'rgba(255,255,255,0.02)', borderRadius:8, border:'1px solid rgba(255,255,255,0.05)' }}>
                                     <div style={{ fontSize:10, color:'#374151', marginBottom:5, fontWeight:700, letterSpacing:'0.06em', textTransform:'uppercase' }}>Merchant Tier</div>
                                     {(hub.dsr||0)>80 ? <span style={{color:GREEN,fontWeight:700,fontSize:13}}>Excellent (&gt;80%)</span>
