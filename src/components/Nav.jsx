@@ -57,8 +57,3 @@ export default function Nav() {
                 transition: 'all 0.15s',
               }}>{s.label}</a>
           ))}
-        </div>
-      </div>
-    </nav>
-  )
-}
