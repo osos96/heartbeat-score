@@ -114,7 +114,7 @@ const MedallionChart = () => (
         display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, color: '#fff', flexShrink: 0 }}>I</div>
       <div style={{ flex: 1 }}>
         <div style={{ fontSize: 13, fontWeight: 800, color: T.red, marginBottom: 2 }}>Intelligence Layer - Serves Gold</div>
-        <div style={{ fontSize: 12, color: T.textSec }}>HeartBeat Score computation (Stars x0.30 + Hubs x0.50 + Merchants x0.20) - Executive dashboard - Hub drill-down - Slack/email alert engine - Merchant portal DSR tier</div>
+        <div style={{ fontSize: 12, color: T.textSec }}>HeartBeat Score computation (Stars x0.30 + Hubs x0.50 + Merchants x0.20) - Executive dashboard - Hub drill-down - Whatsapp/Slack/email alert engine - Merchant portal DSR tier</div>
       </div>
       <div style={{ fontSize: 10, color: T.red, background: T.redLight, border: `1px solid ${T.redBorder}`,
         padding: '3px 10px', borderRadius: 10, fontWeight: 700, flexShrink: 0 }}>Computed nightly - T-1</div>
@@ -127,7 +127,7 @@ const STEPS = [
   { n: '02', title: 'ETL Pipeline',   sub: 'Transform and validate',  detail: 'Staging schema, data quality checks, address normalisation, GPS outlier filtering', color: T.blue },
   { n: '03', title: 'Redshift DW',    sub: 'Analytics warehouse',     detail: 'fact_deliveries, agg_heartbeat_daily, dim_hubs, dim_stars, dim_merchants', color: T.amber },
   { n: '04', title: 'HeartBeat Layer',sub: 'Composite OKR scoring',   detail: 'Stars x0.30 + Hubs x0.50 + Merchants x0.20, computed nightly at hub granularity', color: T.red },
-  { n: '05', title: 'Intelligence',   sub: 'Dashboards and alerts',   detail: 'Executive dashboard, hub-level drill-down, Slack threshold alerts, merchant portal', color: T.mono },
+  { n: '05', title: 'Intelligence',   sub: 'Dashboards and alerts',   detail: 'Executive dashboard, hub-level drill-down, Whatsapp threshold alerts, merchant portal', color: T.mono },
 ]
 
 const PipelineChart = () => (
@@ -223,7 +223,7 @@ const LAYERS = [
   { label:'Analytics Layer (Redshift)', role:'Fact and Dimension Tables', color: T.amber,
     items:['fact_deliveries - one row per attempt, all outcomes','dim_hubs, dim_stars, dim_merchants - reference tables','agg_heartbeat_daily - pre-computed OKR scores per hub','agg_merchant_dsr - rolling DSR per merchant x period'] },
   { label:'HeartBeat BI', role:'Intelligence and Decision Layer', color: T.red,
-    items:['HeartBeat Score: Stars x0.30 + Hubs x0.50 + Merchants x0.20','Executive dashboard - network to city to hub drill-down','Alert engine - threshold breaches sent to Slack or email','Merchant portal - tier badge, DSR trend, recommendations'] },
+    items:['HeartBeat Score: Stars x0.30 + Hubs x0.50 + Merchants x0.20','Executive dashboard - network to city to hub drill-down','Alert engine - threshold breaches sent to Slack or email or Whatsapp','Merchant portal - tier badge, DSR trend, recommendations'] },
 ]
 
 export default function Architecture() {
