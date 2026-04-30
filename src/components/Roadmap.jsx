@@ -18,7 +18,7 @@ From operational observation, backlog spikes correlate with Sundays (post-weeken
 If this hypothesis holds, it redirects the root cause away from driver performance and toward hub capacity planning, a fundamentally different intervention.`,
     statement:'Hubs with Backlog% > 10% will show DSR < 72% in the same 7-day window, with a Pearson r > 0.65.',
     approach:'Join hub_receipts with dispatch_events to calculate backlog by hub by day. Correlate with fact_deliveries DSR per hub per day. Control for volume tier (high/low volume hubs). Segment by city.',
-    interviews:['Hub Operations Manager - peak capacity thresholds and manual overrides','Logistics Planning - volume forecasting accuracy and OFD sizing logic','VP Operations - escalation history and known problem hubs'],
+    interviews:['Hub Operations Manager: peak capacity thresholds and manual overrides','Logistics Planning: volume forecasting accuracy and OFD sizing logic','VP Operations: escalation history and known problem hubs'],
     owners:['ops','data'],
     data:['MongoDB: hub_receipts.received_at vs dispatch_events.dispatched_at','Redshift: fact_deliveries grouped by hub_id × date','agg_heartbeat_daily.backlog_pct'],
     team:['Analyst 1: SQL - backlog vs DSR correlation study','Analyst 3: Hub volume tier segmentation','DE: backlog calculation pipeline if not already in Redshift'],
@@ -27,12 +27,12 @@ If this hypothesis holds, it redirects the root cause away from driver performan
     id:'H2', dept:'Product', title:'Address data quality is driving ASR failure attributed to drivers',
     logic:`In Egypt, addresses often rely on landmarks and informal descriptions rather than structured geocoded data.
 When a merchant's checkout captures an incomplete or unresolvable address, the Star makes a genuine attempt, cannot locate the customer, and logs a failure.
-This failure is recorded against the driver's ASR - masking the root cause which lies upstream in data capture quality.
+This failure is recorded against the driver's ASR, masking the root cause which lies upstream in data capture quality.
 The business implication is significant: ops intervention (driver training) will have no effect on failures caused by bad address data.
 Only a Product-side fix (checkout validation, address normalisation) resolves these cases.`,
     statement:'Failed delivery_attempts where GPS coordinates deviate > 500m from expected address centroid will have Fake Attempt Rate < 1.5%, confirming genuine attempt on wrong location.',
     approach:'Cluster failed attempt GPS coordinates vs merchant_orders.address geolocation. Segment failed attempts by reason_code. Compare ASR% between merchants with normalised vs raw address formats.',
-    interviews:['Product Manager - current address capture UX and validation logic','Merchant Success - merchant feedback on address-related returns','CS team - top 5 call reason codes for "where is my order"'],
+    interviews:['Product Manager: current address capture UX and validation logic','Merchant Success: merchant feedback on address-related returns','CS team: top 5 call reason codes for "where is my order"'],
     owners:['product','data'],
     data:['MongoDB: delivery_attempts.gps_lat/lng × attempt outcome','MongoDB: merchant_orders.address','MongoDB: delivery_attempts.reason_code distribution'],
     team:['Analyst 1: Geospatial clustering of failed attempt GPS vs expected address','Analyst 3: Reason code distribution report by merchant','DE: Address normalisation enrichment in staging layer'],
@@ -40,13 +40,13 @@ Only a Product-side fix (checkout validation, address normalisation) resolves th
   {
     id:'H3', dept:'Customer Service', title:'CS call spikes are a lagging indicator of hub SLA failure, not a CS problem',
     logic:`Customer Service measures contact rate per parcel. High contact rate is treated as a CS capacity problem.
-But the calls are predominantly "where is my order" - a question that would not be asked if the delivery were on time.
+But the calls are predominantly "where is my order", a question that would not be asked if the delivery were on time.
 The hypothesis is that CS spikes are caused by hub Delivery Promised% failures: parcels dispatched too late to hit their window.
 Validating this redirects the fix to Hub Operations (dispatch timing) and Product (proactive notification system) rather than CS headcount or scripts.
 This also creates a predictive capability: monitoring hub dispatch times can forecast CS call spikes 24-48 hours in advance.`,
     statement:'Hubs with Delivery Promised% < 85% in week N will generate CS contact rate > 2.5× network average in week N.',
     approach:'Join CS call logs (parcel_id, call_reason) with fact_deliveries on parcel_id. Calculate contact rate per hub per week. Correlate with agg_heartbeat_daily.del_promised per hub per week.',
-    interviews:['CS Director - top call reasons, peak call timing, per-parcel contact rate baseline','Hub Operations Managers - dispatch scheduling and SLA window setting process','Product - customer notification system capabilities and triggers'],
+    interviews:['CS Director: top call reasons, peak call timing, per-parcel contact rate baseline','Hub Operations Managers: dispatch scheduling and SLA window setting process','Product: customer notification system capabilities and triggers'],
     owners:['cs','ops','data'],
     data:['CS call logs (parcel_id, call_reason, call_timestamp)','Redshift: fact_deliveries.promised_by vs delivered_at','agg_heartbeat_daily.del_promised per hub'],
     team:['Analyst 2: CS log join + hub attribution - contact rate by hub by week','Analyst 1: Dispatch timing correlation with CS spikes','Analyst 3: Automated weekly CS spike report'],
@@ -71,8 +71,8 @@ const PLAN_WEEKS = [
   { week:'Week 5–6', phase:'Build', items:[
     { who:'Manager',  task:'Present H1 findings to VP Operations. Agree intervention on top 3 backlog hubs.' },
     { who:'Analyst 1',task:'Run H2: address quality geospatial cluster. Produce merchant-level address failure rates.' },
-    { who:'Analyst 2',task:'HeartBeat dashboard v1 - network + city level. Deploy in read-only for leadership review.' },
-    { who:'Analyst 3',task:'Historical backfill - 90-day hub KPI data to populate agg_heartbeat_daily in Redshift.' },
+    { who:'Analyst 2',task:'HeartBeat dashboard v1 with network + city level. Deploy in read-only for leadership review.' },
+    { who:'Analyst 3',task:'Historical backfill: 90-day hub KPI data to populate agg_heartbeat_daily in Redshift.' },
     { who:'Data Eng.', task:'Build ETL for CRP, CRE events from MongoDB customer_requests collection.' },
   ]},
   { week:'Week 7–8', phase:'Build', items:[

@@ -28,7 +28,7 @@ export default function Hero() {
           <div style={{ width: 7, height: 7, borderRadius: '50%', background: T.red,
             animation: 'hbp 1.5s ease-in-out infinite' }}/>
           <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.09em', textTransform: 'uppercase' }}>
-            Data Analytics &amp; BI Manager: Strategic Assessment
+            Data Analytics &amp; BI Manager: Bosta Strategic Assessment
           </span>
         </div>
 
@@ -62,7 +62,7 @@ export default function Hero() {
           <a href="#dashboard" style={{ padding: '13px 26px', background: T.card, color: T.textSec,
             borderRadius: 8, fontWeight: 600, fontSize: 14,
             border: `1px solid ${T.border}`, boxShadow: T.shadow, textDecoration: 'none' }}>
-            Open Live Dashboard
+            Open Demo Dashboard Mockup
           </a>
         </div>
       </div>

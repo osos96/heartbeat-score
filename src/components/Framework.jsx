@@ -96,7 +96,7 @@ export default function Framework() {
         The HeartBeat Score framework.
       </h2>
       <p style={{ fontSize:16, color:T.textSec, lineHeight:1.8, maxWidth:680, marginBottom:48 }}>
-        A weighted composite of three operational OKRs - Stars, Hubs, Merchants - each owned by a
+        A weighted composite of three operational OKRs, Stars, Hubs, Merchants, each owned by a
         specific vertical. Weights reflect accountability: Hubs carry 50% because hub throughput is
         the highest-leverage point in the last-mile chain.
       </p>
@@ -125,7 +125,7 @@ export default function Framework() {
       </div>
 
       <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:20 }}>
-        KPI View - select a metric
+        KPI View
       </div>
 
       <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:20, marginBottom:48 }}>
@@ -181,16 +181,16 @@ export default function Framework() {
             {kpi.gamificationNote && (
               <div style={{ marginTop:24, background:T.amberLight, border:`1px solid ${T.amber}30`, borderRadius:10, padding:'16px 20px' }}>
                 <div style={{ fontSize:12, fontWeight:700, color:T.amber, marginBottom:8 }}>
-                  Why sub-60s dwell time - and why Data is accountable for detection
+                  Why sub-60s dwell time, and why Data is accountable for detection
                 </div>
                 <p style={{ fontSize:13, color:T.textSec, lineHeight:1.75, margin:0 }}>
                   A genuine delivery attempt requires the Star to park, approach the address, wait for a response, and return
                   to the vehicle. Any scan logged with less than 60 seconds of GPS dwell time at the delivery coordinate is
-                  statistically inconsistent with a real attempt. We use this as the primary signal - not the only signal -
+                  statistically inconsistent with a real attempt. We use this as the primary signal, not the only signal,
                   because it is objective, tamper-resistant, and already present in the MongoDB event log.
                 </p>
                 <p style={{ fontSize:13, color:T.textSec, lineHeight:1.75, marginTop:10, marginBottom:0 }}>
-                  Data Team is listed as an owner - not Field Ops alone - because gamification prevention cannot be solved
+                  Data Team is listed as an owner, not Field Ops alone, because gamification prevention cannot be solved
                   through operational enforcement. Stars will adapt to any rule they are told about. The detection model must
                   remain a black box: a combination of dwell time, GPS cluster analysis, address-match deviation, and attempt
                   timing patterns that no individual driver can fully reverse-engineer. This is the only approach that stays

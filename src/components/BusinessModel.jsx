@@ -180,7 +180,7 @@ export default function BusinessModel() {
 
       {/* RTO Reverse Cycle */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Reverse Cycle - Return to Origin (RTO)</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Reverse Cycle: Return to Origin (RTO)</div>
         <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 6 }}>Customer → Hub → Sorting → First Mile → Merchant</h3>
         <p style={{ fontSize: 14, color: T.textSec, marginBottom: 28 }}>
           Every RTO represents a full double-cost event: the original delivery attempt cost plus the full reverse logistics cost,
