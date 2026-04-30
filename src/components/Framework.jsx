@@ -57,7 +57,7 @@ const KPIS = [
     stakeholders:'Hub Ops (dispatch accountability), CS (call driver), Merchant Success (merchant SLAs)' },
   { id:'backlog',  label:'Backlog%',           pillar:'Hubs',     weight:'15% (neg)',
     owners:['ops'],            consumers:['data','cs','merch'],
-    desc:'% of received parcels not dispatched within the same-day dispatch window. The single highest-leverage DSR driver.',
+    desc:'% of received parcels + older backlog not dispatched within the same-day dispatch window. The single highest-leverage DSR driver.',
     calc:'Parcels received but not dispatched same day / Total received x 100 (lower is better)',
     source:'MongoDB: hub_receipts.received_at vs dispatch_events.dispatched_at per hub per day',
     stakeholders:'Hub Ops Manager (primary owner), Logistics Planning (capacity forecasting), VP Ops (escalation)' },
