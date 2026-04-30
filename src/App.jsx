@@ -20,4 +20,8 @@ export default function App() {
       <section id="architecture"><Architecture /></section>
       <section id="framework"><Framework /></section>
       <section id="dashboard"><Dashboard /></section>
-      <section id="r
+      <section id="roadmap"><Roadmap /></section>
+      <section id="execution"><Execution /></section>
+    </div>
+  )
+}
