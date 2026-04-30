@@ -15,13 +15,13 @@ const KPIS = [
   { id:'asr',      label:'ASR%',             pillar:'Stars',     weight:'30%',
     owners:['field','data'],
     consumers:['ops','cs'],
-    desc:'Attempt success rate — core driver quality output. Measures the % of OFD parcels resulting in successful delivery.',
+    desc:'Attempt success rate - core driver quality output. Measures the % of OFD parcels resulting in successful delivery.',
     calc:'Delivered parcels / Total OFD parcels attempted × 100',
     source:'MongoDB: delivery_attempts.outcome = "success" / total per hub per day',
     stakeholders:'Field Ops Manager (accountable), Hub Ops (context), CS (symptom monitoring)' },
   { id:'fdds',     label:'FDDS%',            pillar:'Stars',     weight:'20%',
     owners:['field','ops'],   consumers:['data','merch'],
-    desc:'First Day Delivery Success — % of parcels delivered on the same day they first go OFD. Captures route and capacity quality.',
+    desc:'First Day Delivery Success - % of parcels delivered on the same day they first go OFD. Captures route and capacity quality.',
     calc:'Parcels delivered day-of-OFD / Total OFD parcels × 100',
     source:'MongoDB: delivery_attempts.attempt_date = dispatch_events.ofd_date AND outcome = "success"',
     stakeholders:'Field Ops (driver accountability), Logistics Planning (OFD sizing), Merchant Success (promise fulfilment)' },
@@ -29,7 +29,7 @@ const KPIS = [
     owners:['field','data'],  consumers:['ops','cs'],
     desc:'% of delivery attempts where GPS coordinates and timing evidence suggest no genuine delivery attempt was made.',
     calc:'Flagged fake attempts / Total attempts × 100 (lower is better)',
-    source:'MongoDB: delivery_attempts — GPS deviation > threshold from expected address + sub-60s dwell time',
+    source:'MongoDB: delivery_attempts - GPS deviation > threshold from expected address + sub-60s dwell time',
     stakeholders:'Field Ops Manager (discipline), Data Team (detection model), HR (incentive alignment)' },
   { id:'ofd',      label:'OFD/Star',          pillar:'Stars',     weight:'20%',
     owners:['ops','field'],   consumers:['data'],
@@ -39,13 +39,13 @@ const KPIS = [
     stakeholders:'Logistics Planning (capacity), Hub Ops (roster management), Field Ops (route design)' },
   { id:'crp',      label:'CRP%',              pillar:'Stars',     weight:'10%',
     owners:['field','merch'], consumers:['cs'],
-    desc:'Customer Return Pickup rate — % of return pickup requests fulfilled by Stars on the same or next cycle.',
+    desc:'Customer Return Pickup rate - % of return pickup requests fulfilled by Stars on the same or next cycle.',
     calc:'Completed CRP pickups / Total CRP requests × 100',
     source:'MongoDB: customer_requests.type = "CRP" joined with pickup_events',
     stakeholders:'Merchant Success (SLA), Field Ops (driver tasking), CS (customer satisfaction)' },
   { id:'cre',      label:'CRE%',              pillar:'Stars',     weight:'10%',
     owners:['field','merch'], consumers:['cs','product'],
-    desc:'Customer Return Exchange rate — % of exchange requests (return + new delivery) completed in one cycle.',
+    desc:'Customer Return Exchange rate - % of exchange requests (return + new delivery) completed in one cycle.',
     calc:'Completed exchanges / Total exchange requests × 100',
     source:'MongoDB: customer_requests.type = "CRE" joined with delivery_attempts + pickup_events',
     stakeholders:'Merchant Success, Field Ops, Product (exchange workflow)' },
@@ -63,7 +63,7 @@ const KPIS = [
     stakeholders:'Hub Ops Manager (primary owner), Logistics Planning (capacity forecasting), VP Ops (escalation)' },
   { id:'lost',     label:'Lost Parcel%',       pillar:'Hubs',     weight:'15% (neg)',
     owners:['ops'],           consumers:['merch','data'],
-    desc:'% of parcels with no traceable status update after hub receipt — presumed lost in network.',
+    desc:'% of parcels with no traceable status update after hub receipt - presumed lost in network.',
     calc:'Parcels with no outcome event > 5 days after hub receipt / Total received × 100',
     source:'Redshift: fact_deliveries WHERE final_status IS NULL OR last_event_age > 5 days',
     stakeholders:'Hub Ops Manager, Finance (cost impact), Merchant Success (compensation)' },
@@ -88,13 +88,13 @@ export default function Framework() {
   return (
     <div style={{ padding:'100px 2rem 80px', maxWidth:1340, margin:'0 auto' }}>
       <div style={{ marginBottom:10 }}>
-        <span style={{ fontSize:11, fontWeight:700, color:T.red, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 04 — Framework</span>
+        <span style={{ fontSize:11, fontWeight:700, color:T.red, letterSpacing:'0.1em', textTransform:'uppercase' }}>Section 04 - Framework</span>
       </div>
       <h2 style={{ fontSize:'clamp(1.8rem,3.5vw,2.8rem)', fontWeight:800, letterSpacing:'-0.03em', color:T.text, marginBottom:14 }}>
         The HeartBeat Score framework.
       </h2>
       <p style={{ fontSize:16, color:T.textSec, lineHeight:1.8, maxWidth:680, marginBottom:48 }}>
-        A weighted composite of three operational OKRs — Stars, Hubs, Merchants — each owned by a
+        A weighted composite of three operational OKRs - Stars, Hubs, Merchants - each owned by a
         specific vertical. Weights reflect accountability: Hubs carry 50% because hub throughput is
         the highest-leverage point in the last-mile chain.
       </p>
@@ -125,8 +125,8 @@ export default function Framework() {
 
       {/* Pivot toggle */}
       <div style={{ display:'flex', gap:2, marginBottom:32, background:T.borderSub, borderRadius:8, padding:4, width:'fit-content', border:`1px solid ${T.border}` }}>
-        {[{k:'kpi',label:'KPI View — select a metric'},
-          {k:'vertical',label:'Vertical View — pivot by team'}].map(opt => (
+        {[{k:'kpi',label:'KPI View - select a metric'},
+          {k:'vertical',label:'Vertical View - pivot by team'}].map(opt => (
           <button key={opt.k} onClick={() => setPivot(opt.k)} style={{
             padding:'8px 20px', borderRadius:6, border:'none', cursor:'pointer', fontSize:13, fontWeight:600,
             background: pivot===opt.k ? T.card : 'transparent',
@@ -160,7 +160,7 @@ export default function Framework() {
             <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:12, padding:28, boxShadow:T.shadow }}>
               <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
                 <div style={{ width:10, height:10, borderRadius:'50%', background:PILLAR_COLORS[kpi.pillar] }}/>
-                <span style={{ fontSize:11, fontWeight:700, color:PILLAR_COLORS[kpi.pillar], textTransform:'uppercase', letterSpacing:'0.08em' }}>{kpi.pillar} OKR — {kpi.weight}</span>
+                <span style={{ fontSize:11, fontWeight:700, color:PILLAR_COLORS[kpi.pillar], textTransform:'uppercase', letterSpacing:'0.08em' }}>{kpi.pillar} OKR - {kpi.weight}</span>
               </div>
               <div style={{ fontSize:20, fontWeight:800, color:T.text, marginBottom:10 }}>{kpi.label}</div>
               <p style={{ fontSize:14, color:T.textSec, lineHeight:1.75, marginBottom:24 }}>{kpi.desc}</p>
@@ -212,7 +212,7 @@ export default function Framework() {
                     <span style={{ fontSize:12, fontWeight:600, color:T.text }}>{k.label}</span>
                     <span style={{ fontSize:10, color:T.textMuted, marginLeft:'auto' }}>{k.pillar}</span>
                   </div>
-                )) : <div style={{ fontSize:12, color:T.textMuted }}>—</div>}
+                )) : <div style={{ fontSize:12, color:T.textMuted }}>-</div>}
                 {monitoring.length > 0 && <>
                   <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.07em', marginTop:16, marginBottom:8 }}>Monitors</div>
                   {monitoring.map((k,i) => (

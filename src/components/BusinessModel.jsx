@@ -70,7 +70,7 @@ const RTO_STAGES = [
   { label: 'Hub logs RTO scan, routes to Sorting', team: 'Hub Ops' },
   { label: 'Sorting routes to First Mile origin', team: 'Middle Mile' },
   { label: 'First Mile delivers back to Merchant', team: 'First Mile' },
-  { label: 'Merchant receives RTO — net cost incurred', team: 'Merchant Success' },
+  { label: 'Merchant receives RTO - net cost incurred', team: 'Merchant Success' },
 ]
 
 export default function BusinessModel() {
@@ -89,14 +89,14 @@ export default function BusinessModel() {
       <p style={{ fontSize: 16, color: T.textSec, lineHeight: 1.8, maxWidth: 700, marginBottom: 48 }}>
         Bosta is a B2B logistics-tech company that provides last-mile delivery infrastructure for
         e-commerce merchants across Egypt and MENA. Merchants integrate via API or dashboard to fulfil
-        customer orders. Bosta owns the physical delivery cycle end-to-end — pickup, sort, dispatch, deliver.
+        customer orders. Bosta owns the physical delivery cycle end-to-end - pickup, sort, dispatch, deliver.
       </p>
 
       {/* Revenue model cards */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 72 }}>
         {[
           { title: 'Revenue Model', body: 'Per-shipment fee. Contractual SLA defines DSR floor. Below-SLA performance risks merchant churn and contract renegotiation.' },
-          { title: 'Why Operations is the Spine', body: 'Every failed delivery = re-attempt cost + RTO logistics cost + merchant compensation risk. Margin in logistics is thin — operational efficiency is the entire P&L lever.' },
+          { title: 'Why Operations is the Spine', body: 'Every failed delivery = re-attempt cost + RTO logistics cost + merchant compensation risk. Margin in logistics is thin - operational efficiency is the entire P&L lever.' },
           { title: 'Why Data is the Only Scale Path', body: 'Manual ops reviews cannot catch hub-level failures before they cascade. Real-time KPI visibility is the difference between reactive fire-fighting and proactive management.' },
         ].map((c,i) => (
           <div key={i} style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 24, boxShadow: T.shadow }}>
@@ -170,7 +170,7 @@ export default function BusinessModel() {
 
       {/* ── RTO Reverse Journey ── */}
       <div style={{ marginBottom: 16 }}>
-        <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Reverse Cycle — Return to Origin (RTO)</div>
+        <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 8 }}>Reverse Cycle - Return to Origin (RTO)</div>
         <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 6 }}>Customer → Hub → Sorting → First Mile → Merchant</h3>
         <p style={{ fontSize: 14, color: T.textSec, marginBottom: 28 }}>
           Every RTO represents a full double-cost event: the original delivery attempt cost plus the full reverse logistics cost,

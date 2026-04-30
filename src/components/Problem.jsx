@@ -18,11 +18,11 @@ const DSR_DRIVERS = [
 ]
 
 const HB_ONLY = [
-  { label: 'CRP% — Customer Return Pickups', reason: 'Reverse logistics efficiency — affects cost, not delivery success rate' },
-  { label: 'CRE% — Customer Exchange Rate', reason: 'Post-delivery value — separate KPI stream from delivery success' },
-  { label: 'Lost / Damaged %', reason: 'Asset quality KPIs — they nullify deliveries but are tracked separately as hub operational health' },
-  { label: 'OFD / Star', reason: 'Capacity utilisation metric — input indicator, not direct DSR output' },
-  { label: 'Cycle Adaptation', reason: 'Operational resilience metric — contributes to HeartBeat context, not DSR formula' },
+  { label: 'CRP% - Customer Return Pickups', reason: 'Reverse logistics efficiency - affects cost, not delivery success rate' },
+  { label: 'CRE% - Customer Exchange Rate', reason: 'Post-delivery value - separate KPI stream from delivery success' },
+  { label: 'Lost / Damaged %', reason: 'Asset quality KPIs - they nullify deliveries but are tracked separately as hub operational health' },
+  { label: 'OFD / Star', reason: 'Capacity utilisation metric - input indicator, not direct DSR output' },
+  { label: 'Cycle Adaptation', reason: 'Operational resilience metric - contributes to HeartBeat context, not DSR formula' },
 ]
 
 const THEORIES = [
@@ -45,14 +45,14 @@ const THEORIES = [
       title: 'Project: Address Quality Normalisation Initiative',
       goal: 'Quantify what % of failed delivery_attempts correlate to address-mismatch vs genuine customer absence. Drive checkout-level improvement.',
       kpis: ['Address match rate (GPS vs expected)', 'Failed attempt reason_code distribution', 'Re-attempt rate by merchant'],
-      steps: ['Cluster failed attempts by reason_code "address_not_found" vs "customer_absent" (Week 1)', 'Join with merchant_orders.address to calculate normalisation gap (Week 2)', 'Segment by merchant — identify merchants with >20% address failure rate (Week 3)', 'Product team review: checkout validation A/B test proposal (Week 4)'],
+      steps: ['Cluster failed attempts by reason_code "address_not_found" vs "customer_absent" (Week 1)', 'Join with merchant_orders.address to calculate normalisation gap (Week 2)', 'Segment by merchant - identify merchants with >20% address failure rate (Week 3)', 'Product team review: checkout validation A/B test proposal (Week 4)'],
       stakeholders: ['Product Manager', 'Merchant Success Lead', 'VP Operations', 'Data Team'],
       team: ['Analyst 1: Geospatial clustering of failed attempt coordinates', 'Analyst 3: Merchant-level address quality report', 'DE: address normalisation enrichment in staging layer'],
     }
   },
   {
     id: 'cs', dept: 'Customer Service', claim: 'High call volume from unclear delivery status and missed windows',
-    verdict: 'Correct symptom, wrong root. CS call volume is the lagging indicator. The leading cause is Hub-level Delivery Promised% failure — parcels dispatched too late to hit their window.',
+    verdict: 'Correct symptom, wrong root. CS call volume is the lagging indicator. The leading cause is Hub-level Delivery Promised% failure - parcels dispatched too late to hit their window.',
     project: {
       title: 'Project: Delivery Window Accuracy & Proactive Notification',
       goal: 'Map CS call spikes to specific hubs and dispatch timing failures. Fix hub SLA setting and enable proactive customer notifications to reduce inbound calls.',
@@ -88,7 +88,7 @@ export default function Problem() {
       </div>
 
       {/* Three department theories */}
-      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Three Department Theories — with Example Intervention Projects</div>
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Three Department Theories - with Example Intervention Projects</div>
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         {THEORIES.map(t => (
           <button key={t.id} onClick={() => setActiveT(t.id)} style={{
@@ -149,20 +149,20 @@ export default function Problem() {
         </div>
       )}
 
-      {/* DSR Driver Tree — direct drivers only */}
+      {/* DSR Driver Tree - direct drivers only */}
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>DSR Driver Tree</div>
-      <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 8 }}>What directly moves DSR — and what doesn't</h3>
+      <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 8 }}>What directly moves DSR - and what doesn't</h3>
       <p style={{ fontSize: 14, color: T.textSec, lineHeight: 1.75, maxWidth: 700, marginBottom: 28 }}>
         DSR is specifically the rate of successful deliveries. The driver tree below shows only the metrics
         that have a direct causal relationship with whether a parcel is delivered or not. Operational
-        health metrics (CRP, OFD/Star, Lost%) contribute to the broader HeartBeat Score — not DSR directly.
+        health metrics (CRP, OFD/Star, Lost%) contribute to the broader HeartBeat Score - not DSR directly.
       </p>
 
       {/* Root node */}
       <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
         <div style={{ background: T.red, color: '#fff', borderRadius: 10, padding: '12px 36px',
           fontWeight: 800, fontSize: 16, boxShadow: '0 4px 12px rgba(227,6,19,0.25)' }}>
-          DSR — Delivery Success Rate
+          DSR - Delivery Success Rate
         </div>
       </div>
 
@@ -186,7 +186,7 @@ export default function Problem() {
       {/* HeartBeat-only callout */}
       <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 24, boxShadow: T.shadow }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 12 }}>
-          These metrics contribute to HeartBeat Score — but not DSR directly
+          These metrics contribute to HeartBeat Score - but not DSR directly
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 }}>
           {HB_ONLY.map((h,i) => (
