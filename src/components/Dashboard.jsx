@@ -156,7 +156,7 @@ const LeafletMap = ({ cities, onSelectCity, selectedCity, expandedZone }) => {
       // CartoDB Positron - clean light tiles
       window.L.tileLayer(
         'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19 }
+        { attribution: 'Omar Ahmed', subdomains: '© OpenStreetMap contributors © CARTO', maxZoom: 19 }
       ).addTo(mapRef.current)
       window.L.control.zoom({ position: 'bottomright' }).addTo(mapRef.current)
       setReady(true)
@@ -564,13 +564,13 @@ export default function Dashboard() {
                         <span onClick={() => { setExpandedZone(ze ? null : zone.name); setExpandedHub(null) }}
                           style={{ fontWeight: 600, fontSize: 13, color: T.textSec, cursor: 'pointer' }}>{zone.name}</span>
                         <span style={{ fontSize: 10, color: T.textMuted }}>{zone.hubsList?.length} hubs</span>
-                        <button
+                        {/* <button
                           onClick={e => { e.stopPropagation(); setViewHubsZone(vh ? null : zone.name); setExpandedZone(vh ? expandedZone : zone.name) }}
                           style={{ marginLeft: 8, padding: '2px 10px', borderRadius: 5, fontSize: 10, fontWeight: 700, cursor: 'pointer',
                             background: vh ? BLUE : T.card, color: vh ? '#fff' : BLUE,
                             border: `1px solid ${BLUE}`, transition: 'all 0.15s' }}>
                           {vh ? 'Hide Hubs' : 'View Hubs'}
-                        </button>
+                        </button> */}
                       </div>
                       <div style={{ fontWeight: 700, fontSize: 13, color: hbColor(zone.scHB||0)    }}>{(zone.scHB||0).toFixed(1)}%</div>
                       <div style={{ fontSize: 12,    color: hbColor(zone.scStars||0) }}>{(zone.scStars||0).toFixed(1)}%</div>
