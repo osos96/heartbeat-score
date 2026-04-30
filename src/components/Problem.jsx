@@ -71,7 +71,6 @@ export default function Problem() {
   return (
     <div style={{ padding: '100px 2rem 80px', maxWidth: 1340, margin: '0 auto' }}>
 
-      {/* Objective */}
       <div style={{ marginBottom: 10 }}>
         <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Section 02: Problem Statement</span>
       </div>
@@ -87,15 +86,14 @@ export default function Problem() {
         </p>
       </div>
 
-      {/* Three department theories */}
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>Three Department Theories - with Example Intervention Projects</div>
       <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
         {THEORIES.map(t => (
           <button key={t.id} onClick={() => setActiveT(t.id)} style={{
             padding: '10px 22px', borderRadius: 8, cursor: 'pointer', fontWeight: 700, fontSize: 13,
-            background: activeT===t.id ? T.redLight : T.card,
-            border: `1px solid ${activeT===t.id ? T.red : T.border}`,
-            color: activeT===t.id ? T.red : T.textSec, transition: 'all 0.15s',
+            background: activeT === t.id ? T.redLight : T.card,
+            border: `1px solid ${activeT === t.id ? T.red : T.border}`,
+            color: activeT === t.id ? T.red : T.textSec, transition: 'all 0.15s',
           }}>{t.dept}</button>
         ))}
       </div>
@@ -113,7 +111,7 @@ export default function Problem() {
               <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 14 }}>{theory.project.title}</div>
               <p style={{ fontSize: 13, color: T.textSec, lineHeight: 1.7, marginBottom: 16 }}><strong>Goal:</strong> {theory.project.goal}</p>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>KPIs to Monitor</div>
-              {theory.project.kpis.map((k,i) => (
+              {theory.project.kpis.map((k, i) => (
                 <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 6 }}>
                   <div style={{ width: 5, height: 5, borderRadius: '50%', background: T.red, marginTop: 5, flexShrink: 0 }}/>
                   <span style={{ fontSize: 13, color: T.textSec }}>{k}</span>
@@ -122,11 +120,11 @@ export default function Problem() {
             </div>
             <div>
               <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>4-Week Delivery Plan</div>
-              {theory.project.steps.map((s,i) => (
+              {theory.project.steps.map((s, i) => (
                 <div key={i} style={{ display: 'flex', gap: 10, marginBottom: 8 }}>
                   <div style={{ width: 20, height: 20, borderRadius: '50%', background: T.borderSub, border: `1px solid ${T.border}`,
                     display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 10, fontWeight: 700, color: T.textMuted, flexShrink: 0 }}>
-                    {i+1}
+                    {i + 1}
                   </div>
                   <span style={{ fontSize: 12, color: T.textSec, lineHeight: 1.6 }}>{s}</span>
                 </div>
@@ -134,13 +132,13 @@ export default function Problem() {
               <div style={{ marginTop: 14 }}>
                 <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Stakeholders</div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 14 }}>
-                  {theory.project.stakeholders.map((s,i) => (
+                  {theory.project.stakeholders.map((s, i) => (
                     <span key={i} style={{ fontSize: 11, fontWeight: 600, padding: '3px 10px', borderRadius: 20,
                       background: T.borderSub, color: T.textSec, border: `1px solid ${T.border}` }}>{s}</span>
                   ))}
                 </div>
                 <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Team Delegation</div>
-                {theory.project.team.map((m,i) => (
+                {theory.project.team.map((m, i) => (
                   <div key={i} style={{ fontSize: 12, color: T.textSec, marginBottom: 5, paddingLeft: 10, borderLeft: `2px solid ${T.border}` }}>{m}</div>
                 ))}
               </div>
@@ -149,7 +147,6 @@ export default function Problem() {
         </div>
       )}
 
-      {/* DSR Driver Tree - direct drivers only */}
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>DSR Driver Tree</div>
       <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 8 }}>What directly moves DSR, and what doesn't</h3>
       <p style={{ fontSize: 14, color: T.textSec, lineHeight: 1.75, maxWidth: 700, marginBottom: 28 }}>
@@ -159,10 +156,28 @@ export default function Problem() {
       </p>
 
       {/* Root node */}
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}>
         <div style={{ background: T.red, color: '#fff', borderRadius: 10, padding: '12px 36px',
           fontWeight: 800, fontSize: 16, boxShadow: '0 4px 12px rgba(227,6,19,0.25)' }}>
           DSR - Delivery Success Rate
+        </div>
+      </div>
+
+      {/* DSR Formula card */}
+      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 28 }}>
+        <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 10,
+          padding: '16px 28px', boxShadow: T.shadow, maxWidth: 680, width: '100%' }}>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase',
+            letterSpacing: '0.08em', marginBottom: 10 }}>Formula</div>
+          <code style={{ fontSize: 15, fontFamily: 'monospace', fontWeight: 700, color: T.text, display: 'block', marginBottom: 14 }}>
+            DSR% = <span style={{ color: T.green }}>Successfully Delivered Parcels</span> / <span style={{ color: T.blue }}>Total Shipped Parcels</span> x 100
+          </code>
+          <div style={{ display: 'flex', gap: 20, flexWrap: 'wrap', borderTop: `1px solid ${T.border}`, paddingTop: 12 }}>
+            <span style={{ fontSize: 12, color: T.textSec }}><strong style={{ color: T.text }}>Target:</strong> 85%+</span>
+            <span style={{ fontSize: 12, color: T.textSec }}><strong style={{ color: T.text }}>Critical:</strong> Below 75%</span>
+            <span style={{ fontSize: 12, color: T.textSec }}><strong style={{ color: T.text }}>Source:</strong> Redshift: fact_deliveries</span>
+            <span style={{ fontSize: 12, color: T.textSec }}><strong style={{ color: T.text }}>Grain:</strong> Per merchant - per hub - per day</span>
+          </div>
         </div>
       </div>
 
@@ -173,7 +188,7 @@ export default function Problem() {
             <div style={{ fontWeight: 700, fontSize: 14, color: T.text, marginBottom: 4 }}>{d.label}</div>
             <div style={{ fontSize: 12, color: T.textMuted, marginBottom: 12 }}>{d.sub}</div>
             <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: 6 }}>Driven by</div>
-            {d.drivers.map((dr,j) => (
+            {d.drivers.map((dr, j) => (
               <div key={j} style={{ display: 'flex', gap: 6, marginBottom: 4 }}>
                 <span style={{ color: T.red, fontSize: 12, lineHeight: 1 }}>•</span>
                 <span style={{ fontSize: 12, color: T.textSec }}>{dr}</span>
@@ -183,13 +198,12 @@ export default function Problem() {
         ))}
       </div>
 
-      {/* HeartBeat-only callout */}
       <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 24, boxShadow: T.shadow }}>
         <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 12 }}>
           These metrics contribute to HeartBeat Score - but not DSR directly
         </div>
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2,1fr)', gap: 10 }}>
-          {HB_ONLY.map((h,i) => (
+          {HB_ONLY.map((h, i) => (
             <div key={i} style={{ padding: '10px 14px', background: T.borderSub, borderRadius: 8, border: `1px solid ${T.border}` }}>
               <div style={{ fontSize: 13, fontWeight: 600, color: T.textSec }}>{h.label}</div>
               <div style={{ fontSize: 12, color: T.textMuted, marginTop: 3 }}>{h.reason}</div>

@@ -30,7 +30,8 @@ const KPIS = [
     desc:'% of delivery attempts where GPS coordinates and timing evidence suggest no genuine delivery attempt was made.',
     calc:'Flagged fake attempts / Total attempts × 100 (lower is better)',
     source:'MongoDB: delivery_attempts - GPS deviation > threshold from expected address + sub-60s dwell time',
-    stakeholders:'Field Ops Manager (discipline), Data Team (detection model), HR (incentive alignment)' },
+    stakeholders:'Field Ops Manager (discipline), Data Team (detection model), HR (incentive alignment)',
+    gamificationNote: true },
   { id:'ofd',      label:'OFD/Star',          pillar:'Stars',     weight:'20%',
     owners:['ops','field'],   consumers:['data'],
     desc:'Average daily Out-for-Delivery parcel volume per Star per hub. Measures capacity utilisation and route density.',
@@ -77,13 +78,17 @@ const KPIS = [
 
 const PILLAR_COLORS = { Stars:'#16A34A', Hubs:'#2563EB', Merchants:'#D97706' }
 
+/* Accountability matrix: cell value for a given vertical + kpi */
+function cellRole(kpi, vertId) {
+  if (kpi.owners.includes(vertId)) return 'owner'
+  if (kpi.consumers.includes(vertId)) return 'monitor'
+  return null
+}
+
 export default function Framework() {
-  const [activeKpi, setActiveKpi] = useState('backlog')
-  const [pivot, setPivot] = useState('kpi') // 'kpi' | 'vertical'
+  const [activeKpi, setActiveKpi] = useState('asr')
 
   const kpi = KPIS.find(k => k.id === activeKpi)
-
-  const getVerticalKpis = (vid) => KPIS.filter(k => k.owners.includes(vid) || k.consumers.includes(vid))
 
   return (
     <div style={{ padding:'100px 2rem 80px', maxWidth:1340, margin:'0 auto' }}>
@@ -123,107 +128,155 @@ export default function Framework() {
         </div>
       </div>
 
-      {/* Pivot toggle */}
-      <div style={{ display:'flex', gap:2, marginBottom:32, background:T.borderSub, borderRadius:8, padding:4, width:'fit-content', border:`1px solid ${T.border}` }}>
-        {[{k:'kpi',label:'KPI View - select a metric'},
-          {k:'vertical',label:'Vertical View - pivot by team'}].map(opt => (
-          <button key={opt.k} onClick={() => setPivot(opt.k)} style={{
-            padding:'8px 20px', borderRadius:6, border:'none', cursor:'pointer', fontSize:13, fontWeight:600,
-            background: pivot===opt.k ? T.card : 'transparent',
-            color: pivot===opt.k ? T.text : T.textSec,
-            boxShadow: pivot===opt.k ? T.shadow : 'none', transition:'all 0.15s'
-          }}>{opt.label}</button>
-        ))}
+      {/* Section label */}
+      <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:20 }}>
+        KPI View — select a metric
       </div>
 
       {/* KPI View */}
-      {pivot === 'kpi' && (
-        <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:20 }}>
-          {/* KPI list */}
-          <div style={{ display:'flex', flexDirection:'column', gap:2, background:T.card, border:`1px solid ${T.border}`, borderRadius:12, overflow:'hidden', boxShadow:T.shadow }}>
-            {KPIS.map(k => (
-              <button key={k.id} onClick={() => setActiveKpi(k.id)}
-                style={{ padding:'12px 16px', border:'none', borderBottom:`1px solid ${T.border}`,
-                  background: activeKpi===k.id ? T.borderSub : 'transparent',
-                  cursor:'pointer', textAlign:'left', display:'flex', alignItems:'center', gap:10 }}>
-                <div style={{ width:8, height:8, borderRadius:'50%', background:PILLAR_COLORS[k.pillar], flexShrink:0 }}/>
-                <div>
-                  <div style={{ fontSize:13, fontWeight:700, color:T.text }}>{k.label}</div>
-                  <div style={{ fontSize:11, color:T.textMuted }}>{k.pillar} · {k.weight}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-
-          {/* KPI detail */}
-          {kpi && (
-            <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:12, padding:28, boxShadow:T.shadow }}>
-              <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
-                <div style={{ width:10, height:10, borderRadius:'50%', background:PILLAR_COLORS[kpi.pillar] }}/>
-                <span style={{ fontSize:11, fontWeight:700, color:PILLAR_COLORS[kpi.pillar], textTransform:'uppercase', letterSpacing:'0.08em' }}>{kpi.pillar} OKR - {kpi.weight}</span>
+      <div style={{ display:'grid', gridTemplateColumns:'280px 1fr', gap:20, marginBottom:48 }}>
+        {/* KPI list */}
+        <div style={{ display:'flex', flexDirection:'column', gap:2, background:T.card, border:`1px solid ${T.border}`, borderRadius:12, overflow:'hidden', boxShadow:T.shadow }}>
+          {KPIS.map(k => (
+            <button key={k.id} onClick={() => setActiveKpi(k.id)}
+              style={{ padding:'12px 16px', border:'none', borderBottom:`1px solid ${T.border}`,
+                background: activeKpi===k.id ? T.borderSub : 'transparent',
+                cursor:'pointer', textAlign:'left', display:'flex', alignItems:'center', gap:10 }}>
+              <div style={{ width:8, height:8, borderRadius:'50%', background:PILLAR_COLORS[k.pillar], flexShrink:0 }}/>
+              <div>
+                <div style={{ fontSize:13, fontWeight:700, color:T.text }}>{k.label}</div>
+                <div style={{ fontSize:11, color:T.textMuted }}>{k.pillar} · {k.weight}</div>
               </div>
-              <div style={{ fontSize:20, fontWeight:800, color:T.text, marginBottom:10 }}>{kpi.label}</div>
-              <p style={{ fontSize:14, color:T.textSec, lineHeight:1.75, marginBottom:24 }}>{kpi.desc}</p>
-              <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>Calculation</div>
-                  <div style={{ background:T.borderSub, border:`1px solid ${T.border}`, borderRadius:8, padding:'10px 14px', fontFamily:'monospace', fontSize:12, color:T.mono }}>{kpi.calc}</div>
-                  <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginTop:16, marginBottom:8 }}>Data Source</div>
-                  <div style={{ background:T.borderSub, border:`1px solid ${T.border}`, borderRadius:8, padding:'10px 14px', fontFamily:'monospace', fontSize:11, color:T.mono }}>{kpi.source}</div>
+            </button>
+          ))}
+        </div>
+
+        {/* KPI detail */}
+        {kpi && (
+          <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:12, padding:28, boxShadow:T.shadow }}>
+            <div style={{ display:'flex', alignItems:'center', gap:12, marginBottom:16 }}>
+              <div style={{ width:10, height:10, borderRadius:'50%', background:PILLAR_COLORS[kpi.pillar] }}/>
+              <span style={{ fontSize:11, fontWeight:700, color:PILLAR_COLORS[kpi.pillar], textTransform:'uppercase', letterSpacing:'0.08em' }}>{kpi.pillar} OKR - {kpi.weight}</span>
+            </div>
+            <div style={{ fontSize:20, fontWeight:800, color:T.text, marginBottom:10 }}>{kpi.label}</div>
+            <p style={{ fontSize:14, color:T.textSec, lineHeight:1.75, marginBottom:24 }}>{kpi.desc}</p>
+
+            <div style={{ display:'grid', gridTemplateColumns:'1fr 1fr', gap:20 }}>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>Calculation</div>
+                <div style={{ background:T.borderSub, border:`1px solid ${T.border}`, borderRadius:8, padding:'10px 14px', fontFamily:'monospace', fontSize:12, color:T.mono }}>{kpi.calc}</div>
+                <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginTop:16, marginBottom:8 }}>Data Source</div>
+                <div style={{ background:T.borderSub, border:`1px solid ${T.border}`, borderRadius:8, padding:'10px 14px', fontFamily:'monospace', fontSize:11, color:T.mono }}>{kpi.source}</div>
+              </div>
+              <div>
+                <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>OKR Owners (accountable)</div>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:16 }}>
+                  {kpi.owners.map((v,i) => {
+                    const vert = VERTICALS.find(vt=>vt.id===v)
+                    return <span key={i} style={{ fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:6, background:T.redLight, color:T.red, border:`1px solid ${T.redBorder}` }}>{vert?.label}</span>
+                  })}
                 </div>
-                <div>
-                  <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>OKR Owners (accountable)</div>
-                  <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:16 }}>
-                    {kpi.owners.map((v,i) => {
-                      const vert = VERTICALS.find(vt=>vt.id===v)
-                      return <span key={i} style={{ fontSize:11, fontWeight:700, padding:'4px 10px', borderRadius:6, background:T.redLight, color:T.red, border:`1px solid ${T.redBorder}` }}>{vert?.label}</span>
-                    })}
-                  </div>
-                  <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>Verticals Monitoring</div>
-                  <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:16 }}>
-                    {kpi.consumers.map((v,i) => {
-                      const vert = VERTICALS.find(vt=>vt.id===v)
-                      return <span key={i} style={{ fontSize:11, fontWeight:600, padding:'4px 10px', borderRadius:6, background:T.borderSub, color:T.textSec, border:`1px solid ${T.border}` }}>{vert?.label}</span>
-                    })}
-                  </div>
-                  <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>Stakeholder Map</div>
-                  <p style={{ fontSize:13, color:T.textSec, lineHeight:1.7 }}>{kpi.stakeholders}</p>
+                <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>Verticals Monitoring</div>
+                <div style={{ display:'flex', flexWrap:'wrap', gap:6, marginBottom:16 }}>
+                  {kpi.consumers.map((v,i) => {
+                    const vert = VERTICALS.find(vt=>vt.id===v)
+                    return <span key={i} style={{ fontSize:11, fontWeight:600, padding:'4px 10px', borderRadius:6, background:T.borderSub, color:T.textSec, border:`1px solid ${T.border}` }}>{vert?.label}</span>
+                  })}
                 </div>
+                <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8 }}>Stakeholder Map</div>
+                <p style={{ fontSize:13, color:T.textSec, lineHeight:1.7 }}>{kpi.stakeholders}</p>
               </div>
             </div>
-          )}
-        </div>
-      )}
 
-      {/* Vertical View */}
-      {pivot === 'vertical' && (
-        <div style={{ display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:16 }}>
-          {VERTICALS.map(vert => {
-            const owned = KPIS.filter(k => k.owners.includes(vert.id))
-            const monitoring = KPIS.filter(k => k.consumers.includes(vert.id) && !k.owners.includes(vert.id))
-            return (
-              <div key={vert.id} style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:12, padding:22, boxShadow:T.shadow }}>
-                <div style={{ fontSize:14, fontWeight:800, color:T.text, marginBottom:4 }}>{vert.label}</div>
-                <div style={{ fontSize:12, color:T.textMuted, marginBottom:16 }}>{vert.owner}</div>
-                <div style={{ fontSize:11, fontWeight:700, color:T.red, textTransform:'uppercase', letterSpacing:'0.07em', marginBottom:8 }}>Owns & Accountable</div>
-                {owned.length ? owned.map((k,i) => (
-                  <div key={i} style={{ display:'flex', gap:8, marginBottom:6, alignItems:'center' }}>
-                    <div style={{ width:6, height:6, borderRadius:'50%', background:PILLAR_COLORS[k.pillar], flexShrink:0 }}/>
-                    <span style={{ fontSize:12, fontWeight:600, color:T.text }}>{k.label}</span>
-                    <span style={{ fontSize:10, color:T.textMuted, marginLeft:'auto' }}>{k.pillar}</span>
-                  </div>
-                )) : <div style={{ fontSize:12, color:T.textMuted }}>-</div>}
-                {monitoring.length > 0 && <>
-                  <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.07em', marginTop:16, marginBottom:8 }}>Monitors</div>
-                  {monitoring.map((k,i) => (
-                    <div key={i} style={{ fontSize:12, color:T.textSec, marginBottom:4, paddingLeft:8, borderLeft:`2px solid ${T.border}` }}>{k.label}</div>
-                  ))}
-                </>}
+            {/* Gamification note for Fake Attempt Rate */}
+            {kpi.gamificationNote && (
+              <div style={{ marginTop:24, background:T.amberLight, border:`1px solid ${T.amber}30`, borderRadius:10, padding:'16px 20px' }}>
+                <div style={{ fontSize:12, fontWeight:700, color:T.amber, marginBottom:8 }}>
+                  Why sub-60s dwell time — and why Data is accountable for detection
+                </div>
+                <p style={{ fontSize:13, color:T.textSec, lineHeight:1.75, margin:0 }}>
+                  A genuine delivery attempt requires the Star to park, approach the address, wait for a response, and return
+                  to the vehicle. Any scan logged with less than 60 seconds of GPS dwell time at the delivery coordinate is
+                  statistically inconsistent with a real attempt. We use this as the primary signal — not the only signal —
+                  because it is objective, tamper-resistant, and already present in the MongoDB event log.
+                </p>
+                <p style={{ fontSize:13, color:T.textSec, lineHeight:1.75, marginTop:10, marginBottom:0 }}>
+                  Data Team is listed as an owner — not Field Ops alone — because gamification prevention cannot be solved
+                  through operational enforcement. Stars will adapt to any rule they are told about. The detection model must
+                  remain a black box: a combination of dwell time, GPS cluster analysis, address-match deviation, and attempt
+                  timing patterns that no individual driver can fully reverse-engineer. This is the only approach that stays
+                  ahead of behavioural drift.
+                </p>
               </div>
-            )
-          })}
+            )}
+          </div>
+        )}
+      </div>
+
+      {/* Accountability Matrix */}
+      <div style={{ fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.1em', marginBottom:20 }}>
+        Accountability Matrix — which teams own each KPI
+      </div>
+      <div style={{ background:T.card, border:`1px solid ${T.border}`, borderRadius:12, overflow:'hidden', boxShadow:T.shadow, marginBottom:16 }}>
+        {/* Header row */}
+        <div style={{ display:'grid', gridTemplateColumns:`200px repeat(${VERTICALS.length}, 1fr)`,
+          borderBottom:`1px solid ${T.border}`, background:T.borderSub }}>
+          <div style={{ padding:'10px 16px', fontSize:11, fontWeight:700, color:T.textMuted, textTransform:'uppercase', letterSpacing:'0.07em' }}>KPI / OKR</div>
+          {VERTICALS.map(v => (
+            <div key={v.id} style={{ padding:'10px 8px', fontSize:10, fontWeight:700, color:T.textMuted,
+              textTransform:'uppercase', letterSpacing:'0.06em', textAlign:'center', borderLeft:`1px solid ${T.border}` }}>
+              {v.label}
+            </div>
+          ))}
         </div>
-      )}
+
+        {/* KPI rows grouped by pillar */}
+        {['Stars','Hubs','Merchants'].map(pillar => {
+          const pillarKpis = KPIS.filter(k => k.pillar === pillar)
+          const pc = PILLAR_COLORS[pillar]
+          return (
+            <React.Fragment key={pillar}>
+              {/* Pillar header */}
+              <div style={{ padding:'6px 16px', background:`${pc}0D`, borderBottom:`1px solid ${T.border}`,
+                fontSize:10, fontWeight:800, color:pc, textTransform:'uppercase', letterSpacing:'0.08em' }}>
+                {pillar} OKR — {pillar==='Stars'?'30%':pillar==='Hubs'?'50%':'20%'}
+              </div>
+              {pillarKpis.map((k, ki) => (
+                <div key={k.id}
+                  onClick={() => setActiveKpi(k.id)}
+                  style={{ display:'grid', gridTemplateColumns:`200px repeat(${VERTICALS.length}, 1fr)`,
+                    borderBottom:`1px solid ${T.border}`, cursor:'pointer',
+                    background: activeKpi===k.id ? T.borderSub : 'transparent',
+                    transition:'background 0.1s' }}>
+                  <div style={{ padding:'10px 16px', display:'flex', alignItems:'center', gap:8 }}>
+                    <div style={{ width:6, height:6, borderRadius:'50%', background:pc, flexShrink:0 }}/>
+                    <span style={{ fontSize:12, fontWeight:600, color:T.text }}>{k.label}</span>
+                  </div>
+                  {VERTICALS.map(v => {
+                    const role = cellRole(k, v.id)
+                    return (
+                      <div key={v.id} style={{ borderLeft:`1px solid ${T.border}`,
+                        display:'flex', alignItems:'center', justifyContent:'center', padding:'8px 4px' }}>
+                        {role === 'owner' && (
+                          <span style={{ fontSize:10, fontWeight:700, padding:'2px 8px', borderRadius:4,
+                            background:T.redLight, color:T.red, border:`1px solid ${T.redBorder}` }}>Owner</span>
+                        )}
+                        {role === 'monitor' && (
+                          <span style={{ fontSize:10, fontWeight:600, padding:'2px 8px', borderRadius:4,
+                            background:T.borderSub, color:T.textMuted, border:`1px solid ${T.border}` }}>Monitors</span>
+                        )}
+                      </div>
+                    )
+                  })}
+                </div>
+              ))}
+            </React.Fragment>
+          )
+        })}
+      </div>
+      <div style={{ fontSize:12, color:T.textMuted, marginBottom:8 }}>
+        Click any row to load the KPI detail above. <strong style={{ color:T.red }}>Owner</strong> = accountable for metric outcome. <strong style={{ color:T.textSec }}>Monitors</strong> = uses the metric as a leading indicator.
+      </div>
     </div>
   )
 }

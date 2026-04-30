@@ -2,7 +2,126 @@
 import React, { useState } from 'react'
 import { T } from './theme'
 
-/* ── Simple pipeline flow (div-based, no SVG clutter) ── */
+/* Medallion Architecture layers */
+const MEDALLION = [
+  {
+    tier: 'Bronze', subtitle: 'Raw Ingestion Layer', color: '#CD7F32',
+    bg: '#FDF6EE', border: '#CD7F3240',
+    desc: 'Exact copy of operational MongoDB events. No transformation. Every raw document preserved with source timestamp. This is the immutable audit trail.',
+    tables: [
+      'delivery_attempts — raw driver scan events',
+      'hub_receipts — inbound parcel scans (raw)',
+      'dispatch_events — OFD assignments (raw)',
+      'merchant_orders — order metadata from API',
+      'pickup_events — first mile inductions',
+      'sort_events — sorting facility logs',
+    ],
+    latency: 'Near real-time (5 min micro-batch)',
+    owner: 'Data Engineering',
+  },
+  {
+    tier: 'Silver', subtitle: 'Validated & Enriched Layer', color: '#94A3B8',
+    bg: '#F8FAFC', border: '#94A3B840',
+    desc: 'Cleaned, deduplicated, and enriched data ready for analytics. GPS outliers removed, addresses normalised, middle-mile leakage flagged, duplicate scans collapsed.',
+    tables: [
+      'stg_delivery_attempts — validated, GPS-clean',
+      'stg_hub_receipts — deduped, latency-flagged',
+      'stg_dispatch_events — OFD with backlog flag',
+      'stg_merchant_orders — address-normalised',
+      'ref_address_lookup — enriched GPS index',
+      'flag_middle_mile_leakage — no-receipt parcels',
+    ],
+    latency: '30-min refresh for ops KPIs',
+    owner: 'Data Engineering + Analytics',
+  },
+  {
+    tier: 'Gold', subtitle: 'Business Aggregates Layer', color: '#D97706',
+    bg: '#FFFBEB', border: '#D9770640',
+    desc: 'Business-ready aggregated tables powering dashboards and the HeartBeat score. Pre-computed at hub x day grain. Optimised for fast BI queries.',
+    tables: [
+      'fact_deliveries — one row per attempt + outcome',
+      'agg_heartbeat_daily — HB score per hub per day',
+      'agg_merchant_dsr — rolling DSR per merchant',
+      'dim_hubs / dim_stars / dim_merchants — reference',
+      'agg_hub_ops_daily — backlog, dispatch, throughput',
+      'agg_star_performance — ASR, FDDS, fake rate',
+    ],
+    latency: 'Nightly T-1 (executive view)',
+    owner: 'Analytics / BI',
+  },
+]
+
+const MedallionChart = () => (
+  <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: '32px 28px', boxShadow: T.shadow }}>
+    <div style={{ display: 'flex', alignItems: 'center', gap: 0, marginBottom: 28 }}>
+      {MEDALLION.map((m, i) => (
+        <React.Fragment key={m.tier}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+            <div style={{ width: 10, height: 10, borderRadius: '50%', background: m.color }}/>
+            <span style={{ fontSize: 12, fontWeight: 700, color: m.color }}>{m.tier}</span>
+          </div>
+          {i < MEDALLION.length - 1 && (
+            <svg width="48" height="14" viewBox="0 0 48 14" style={{ margin: '0 12px' }}>
+              <line x1="0" y1="7" x2="36" y2="7" stroke={T.border} strokeWidth="1.5"/>
+              <polygon points="36,3 48,7 36,11" fill={T.border}/>
+            </svg>
+          )}
+        </React.Fragment>
+      ))}
+      <svg width="48" height="14" viewBox="0 0 48 14" style={{ margin: '0 12px' }}>
+        <line x1="0" y1="7" x2="36" y2="7" stroke={T.border} strokeWidth="1.5"/>
+        <polygon points="36,3 48,7 36,11" fill={T.border}/>
+      </svg>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+        <div style={{ width: 10, height: 10, borderRadius: '50%', background: T.red }}/>
+        <span style={{ fontSize: 12, fontWeight: 700, color: T.red }}>Intelligence</span>
+      </div>
+    </div>
+
+    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16, marginBottom: 16 }}>
+      {MEDALLION.map(m => (
+        <div key={m.tier} style={{ border: `1px solid ${m.border}`, borderTop: `3px solid ${m.color}`,
+          borderRadius: 10, padding: 20, background: m.bg }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <div style={{ width: 28, height: 28, borderRadius: 6, background: m.color,
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+              fontSize: 11, fontWeight: 900, color: '#fff' }}>{m.tier[0]}</div>
+            <div>
+              <div style={{ fontSize: 13, fontWeight: 800, color: T.text }}>{m.tier} Layer</div>
+              <div style={{ fontSize: 11, color: T.textMuted }}>{m.subtitle}</div>
+            </div>
+          </div>
+          <p style={{ fontSize: 12, color: T.textSec, lineHeight: 1.65, marginBottom: 14 }}>{m.desc}</p>
+          <div style={{ fontSize: 10, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.07em', marginBottom: 8 }}>Tables / Collections</div>
+          {m.tables.map((t, i) => (
+            <div key={i} style={{ fontSize: 11, color: T.mono, fontFamily: 'monospace', padding: '4px 8px',
+              background: 'rgba(255,255,255,0.7)', borderRadius: 4, marginBottom: 4,
+              borderLeft: `2px solid ${m.color}` }}>{t}</div>
+          ))}
+          <div style={{ marginTop: 12, display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+            <span style={{ fontSize: 10, color: T.textMuted, background: 'rgba(255,255,255,0.8)',
+              padding: '2px 8px', borderRadius: 10, border: `1px solid ${m.border}` }}>Latency: {m.latency}</span>
+            <span style={{ fontSize: 10, color: T.textMuted, background: 'rgba(255,255,255,0.8)',
+              padding: '2px 8px', borderRadius: 10, border: `1px solid ${m.border}` }}>Owner: {m.owner}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div style={{ background: T.redLight, border: `1px solid ${T.redBorder}`, borderRadius: 10, padding: '16px 20px',
+      display: 'flex', alignItems: 'center', gap: 20, flexWrap: 'wrap' }}>
+      <div style={{ width: 32, height: 32, borderRadius: 8, background: T.red,
+        display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 13, fontWeight: 900, color: '#fff', flexShrink: 0 }}>I</div>
+      <div style={{ flex: 1 }}>
+        <div style={{ fontSize: 13, fontWeight: 800, color: T.red, marginBottom: 2 }}>Intelligence Layer - Serves Gold</div>
+        <div style={{ fontSize: 12, color: T.textSec }}>HeartBeat Score computation (Stars x0.30 + Hubs x0.50 + Merchants x0.20) - Executive dashboard - Hub drill-down - Slack/email alert engine - Merchant portal DSR tier</div>
+      </div>
+      <div style={{ fontSize: 10, color: T.red, background: T.redLight, border: `1px solid ${T.redBorder}`,
+        padding: '3px 10px', borderRadius: 10, fontWeight: 700, flexShrink: 0 }}>Computed nightly - T-1</div>
+    </div>
+  </div>
+)
+
 const STEPS = [
   { n: '01', title: 'MongoDB',        sub: 'Operational event store', detail: 'delivery_attempts, hub_receipts, dispatch_events, merchant_orders', color: T.green },
   { n: '02', title: 'ETL Pipeline',   sub: 'Transform and validate',  detail: 'Staging schema, data quality checks, address normalisation, GPS outlier filtering', color: T.blue },
@@ -17,7 +136,7 @@ const PipelineChart = () => (
       {STEPS.map((s, i) => (
         <React.Fragment key={s.n}>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', minWidth: 130, padding: '0 8px' }}>
-            <div style={{ width: 48, height: 48, borderRadius: '50%', background: `${s.color}14`,
+            <div style={{ width: 48, height: 48, borderRadius: '50%', background: s.color + '14',
               border: `2px solid ${s.color}`, display: 'flex', alignItems: 'center', justifyContent: 'center',
               fontSize: 13, fontWeight: 900, color: s.color, marginBottom: 12 }}>{s.n}</div>
             <div style={{ fontSize: 13, fontWeight: 700, color: T.text, marginBottom: 4 }}>{s.title}</div>
@@ -39,17 +158,14 @@ const PipelineChart = () => (
   </div>
 )
 
-/* ── HeartBeat score tree (clean 3-pillar layout) ── */
 const ScoreTree = () => (
   <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: '32px 24px', boxShadow: T.shadow }}>
-    {/* Root node */}
     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
       <div style={{ background: T.red, color: '#fff', borderRadius: 10, padding: '12px 48px',
         fontWeight: 800, fontSize: 17, boxShadow: '0 4px 12px rgba(227,6,19,0.22)' }}>
         HeartBeat Score
       </div>
     </div>
-    {/* Connector */}
     <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 20 }}>
       <svg width="640" height="36" viewBox="0 0 640 36">
         <line x1="320" y1="0" x2="320" y2="18" stroke={T.border} strokeWidth="2"/>
@@ -59,40 +175,36 @@ const ScoreTree = () => (
         <line x1="540" y1="18" x2="540" y2="36" stroke={T.border} strokeWidth="2"/>
       </svg>
     </div>
-    {/* Three pillars */}
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
-      {/* Stars */}
       <div style={{ border: `1px solid ${T.green}40`, borderTop: `3px solid ${T.green}`, borderRadius: 8, padding: 18, background: T.greenLight }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.green, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Stars OKR</div>
         <div style={{ fontSize: 22, fontWeight: 900, color: T.green, marginBottom: 2 }}>30%</div>
         <div style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>Driver layer across all hubs</div>
-        {['ASR% - Attempt Success Rate','FDDS% - First Day Delivery','Fake Attempt Rate (negative)','OFD Volume per Star','CRP% - Return Pickup Rate','CRE% - Exchange Rate'].map((k,i)=>(
+        {['ASR% - Attempt Success Rate','FDDS% - First Day Delivery','Fake Attempt Rate (negative)','OFD Volume per Star','CRP% - Return Pickup Rate','CRE% - Exchange Rate'].map((k, i) => (
           <div key={i} style={{ fontSize: 11, color: T.textSec, padding: '5px 9px', background: 'rgba(255,255,255,0.75)',
             borderRadius: 4, marginBottom: 4, borderLeft: `2px solid ${T.green}` }}>{k}</div>
         ))}
       </div>
-      {/* Hubs */}
       <div style={{ border: `1px solid ${T.blue}40`, borderTop: `3px solid ${T.blue}`, borderRadius: 8, padding: 18, background: T.blueLight }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.blue, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Hubs OKR</div>
         <div style={{ fontSize: 22, fontWeight: 900, color: T.blue, marginBottom: 2 }}>50%</div>
         <div style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>Operations layer, majority weight</div>
-        {['Delivery Promised %','Backlog Rate (negative)','Same-Day Dispatch Rate','Lost Parcel % (negative)','Damaged Rate (negative)','Cycle Adaptation Score'].map((k,i)=>(
+        {['Delivery Promised %','Backlog Rate (negative)','Same-Day Dispatch Rate','Lost Parcel % (negative)','Damaged Rate (negative)','Cycle Adaptation Score'].map((k, i) => (
           <div key={i} style={{ fontSize: 11, color: T.textSec, padding: '5px 9px', background: 'rgba(255,255,255,0.75)',
             borderRadius: 4, marginBottom: 4, borderLeft: `2px solid ${T.blue}` }}>{k}</div>
         ))}
       </div>
-      {/* Merchants */}
       <div style={{ border: `1px solid ${T.amber}40`, borderTop: `3px solid ${T.amber}`, borderRadius: 8, padding: 18, background: T.amberLight }}>
         <div style={{ fontSize: 11, fontWeight: 700, color: T.amber, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 2 }}>Merchants OKR</div>
         <div style={{ fontSize: 22, fontWeight: 900, color: T.amber, marginBottom: 2 }}>20%</div>
         <div style={{ fontSize: 11, color: T.textSec, marginBottom: 14 }}>Business outcome layer</div>
-        {['DSR% - Delivery Success Rate','Merchant Tier Classification','RTO Rate (return to origin)'].map((k,i)=>(
+        {['DSR% - Delivery Success Rate','Merchant Tier Classification','RTO Rate (return to origin)'].map((k, i) => (
           <div key={i} style={{ fontSize: 11, color: T.textSec, padding: '5px 9px', background: 'rgba(255,255,255,0.75)',
             borderRadius: 4, marginBottom: 4, borderLeft: `2px solid ${T.amber}` }}>{k}</div>
         ))}
         <div style={{ marginTop: 14, background: 'rgba(255,255,255,0.75)', borderRadius: 6, padding: '10px 12px', border: `1px solid ${T.amber}30` }}>
           <div style={{ fontSize: 10, fontWeight: 700, color: T.amber, marginBottom: 6 }}>TIER THRESHOLDS</div>
-          {[['Bad Business','red','65%'],['Default','amber','65-70%'],['Good','blue','70-75%'],['Excellent','green','>80%']].map(([label,c,range])=>(
+          {[['Bad Business','65% and below'],['Default','65-70%'],['Good','70-75%'],['Very Good','75-80%'],['Excellent','above 80%']].map(([label, range]) => (
             <div key={label} style={{ fontSize: 10, color: T.textSec, display: 'flex', justifyContent: 'space-between', marginBottom: 3 }}>
               <span>{label}</span><span style={{ fontWeight: 700 }}>{range}</span>
             </div>
@@ -132,6 +244,11 @@ export default function Architecture() {
       </p>
 
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
+        Medallion Architecture - Bronze, Silver, Gold
+      </div>
+      <div style={{ marginBottom: 48 }}><MedallionChart /></div>
+
+      <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 16 }}>
         End-to-End Data Pipeline
       </div>
       <div style={{ marginBottom: 48 }}><PipelineChart /></div>
@@ -141,7 +258,6 @@ export default function Architecture() {
       </div>
       <div style={{ marginBottom: 48 }}><ScoreTree /></div>
 
-      {/* Layer accordion */}
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 20 }}>
         Layer Reference - click to expand
       </div>
@@ -174,7 +290,6 @@ export default function Architecture() {
         })}
       </div>
 
-      {/* Design notes */}
       <div style={{ marginTop: 40, display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 16 }}>
         {[
           { title: 'Middle-Mile Leakage', body: 'Parcels not receiving a hub receipt scan within 24h are flagged as Middle Mile delays. Excluded from Hub KPIs but surfaced as a percentage alert. Hubs are not penalised for upstream failure.' },

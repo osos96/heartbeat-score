@@ -1,6 +1,6 @@
-
 import React, { useState, useEffect } from 'react'
 import { T } from './theme'
+import BostaLogo from '../assets/Bosta.svg'
 
 const SECTIONS = [
   { id: 'hero',         label: 'Overview' },
@@ -31,25 +31,20 @@ export default function Nav() {
   return (
     <nav style={{
       position: 'fixed', top: 0, left: 0, right: 0, zIndex: 1000,
-      background: scrolled ? 'rgba(248,250,252,0.95)' : 'transparent',
+      background: scrolled ? 'rgba(236,238,242,0.95)' : 'transparent',
       backdropFilter: scrolled ? 'blur(12px)' : 'none',
       borderBottom: scrolled ? `1px solid ${T.border}` : 'none',
       transition: 'all 0.25s ease',
       padding: '0 2rem',
     }}>
       <div style={{ maxWidth: 1340, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: 60 }}>
-        {/* Logo */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <svg viewBox="0 0 26 26" width="26" height="26" fill="none">
-            <circle cx="13" cy="13" r="12" stroke={T.red} strokeWidth="1.5"/>
-            <polyline points="3,13 8,13 10,7 13,19 16,10 18,13 23,13"
-              stroke={T.red} strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-          <span style={{ fontWeight: 800, fontSize: 15, color: T.text, letterSpacing: '-0.02em' }}>
-            Bosta <span style={{ color: T.red }}>HeartBeat</span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <img src={BostaLogo} alt="Bosta" style={{ height: 28, display: 'block' }} />
+          <div style={{ width: 1, height: 22, background: T.border }} />
+          <span style={{ fontWeight: 800, fontSize: 17, color: T.text, letterSpacing: '-0.02em' }}>
+            <span style={{ color: T.red }}>HeartBeat</span> Score
           </span>
         </div>
-        {/* Links */}
         <div style={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
           {SECTIONS.map(s => (
             <a key={s.id} href={`#${s.id}`} onClick={() => setActive(s.id)}

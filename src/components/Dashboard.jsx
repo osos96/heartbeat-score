@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo, useEffect, useRef, useCallback } from 'react'
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer, CartesianGrid, ReferenceLine } from 'recharts'
 import { ALL_DATA, aggregate, getTrendData, calcScores } from './dashboardData'
@@ -18,6 +19,82 @@ const KPI_OPTS = [
 ]
 
 const TREND_KEYS = ['scHB','scStars','scHubs','scMerch','asr','fdds','delPromised','backlog','fake']
+
+// City polygon coordinates [lat, lng] arrays - approximate bounding shapes for Egypt cities
+const CITY_POLYGONS = {
+  'Greater Cairo': [[30.20,31.10],[30.20,31.55],[29.84,31.55],[29.84,31.10]],
+  'Alexandria':    [[31.35,29.72],[31.35,30.14],[31.05,30.14],[31.05,29.72]],
+  'Giza':          [[30.08,30.84],[30.08,31.22],[29.88,31.22],[29.88,30.84]],
+  'Mansoura':      [[31.10,31.24],[31.10,31.52],[30.94,31.52],[30.94,31.24]],
+  'Assiut':        [[27.30,31.04],[27.30,31.32],[27.08,31.32],[27.08,31.04]],
+}
+
+// Zone polygon coordinates
+const ZONE_POLYGONS = {
+  'East Cairo':    [[30.18,31.28],[30.18,31.55],[30.02,31.55],[30.02,31.28]],
+  'West Cairo':    [[30.12,30.84],[30.12,31.16],[29.92,31.16],[29.92,30.84]],
+  'South Cairo':   [[30.02,31.16],[30.02,31.42],[29.84,31.42],[29.84,31.16]],
+  'North Cairo':   [[30.20,31.16],[30.20,31.42],[30.10,31.42],[30.10,31.16]],
+  'Central Alex':  [[31.35,29.88],[31.35,30.14],[31.18,30.14],[31.18,29.88]],
+  'Agamy':         [[31.18,29.72],[31.18,30.00],[31.05,30.00],[31.05,29.72]],
+  'North Giza':    [[30.08,30.98],[30.08,31.22],[30.00,31.22],[30.00,30.98]],
+  'South Giza':    [[30.02,30.84],[30.02,31.06],[29.88,31.06],[29.88,30.84]],
+  'East Mansoura': [[31.08,31.36],[31.08,31.52],[30.94,31.52],[30.94,31.36]],
+  'West Mansoura': [[31.10,31.24],[31.10,31.42],[30.96,31.42],[30.96,31.24]],
+  'North Assiut':  [[27.30,31.14],[27.30,31.32],[27.18,31.32],[27.18,31.14]],
+  'South Assiut':  [[27.20,31.04],[27.20,31.24],[27.08,31.24],[27.08,31.04]],
+}
+
+// Approximate hub pin coordinates [lat, lng]
+const HUB_COORDS = {
+  'c-e1': [30.065, 31.330], 'c-e2': [30.092, 31.322], 'c-e3': [30.030, 31.470],
+  'c-w1': [29.964, 30.924], 'c-w2': [30.019, 30.976],
+  'c-s1': [29.962, 31.250], 'c-s2': [29.850, 31.334],
+  'c-n1': [30.130, 31.245],
+  'a-m1': [31.278, 30.006], 'a-m2': [31.215, 29.948],
+  'a-a1': [31.080, 29.818], 'a-a2': [31.065, 29.795],
+  'g-n1': [30.066, 31.205], 'g-s1': [29.994, 31.150],
+  'm-e1': [31.022, 31.420], 'm-w1': [31.041, 31.275],
+  'as-n1':[27.195, 31.200], 'as-s1':[27.155, 31.165],
+}
+
+// City view bounds [sw, ne] for fitBounds
+const CITY_BOUNDS = {
+  'Greater Cairo': [[29.84, 31.10], [30.20, 31.55]],
+  'Alexandria':    [[31.05, 29.72], [31.35, 30.14]],
+  'Giza':          [[29.88, 30.84], [30.08, 31.22]],
+  'Mansoura':      [[30.94, 31.24], [31.10, 31.52]],
+  'Assiut':        [[27.08, 31.04], [27.30, 31.32]],
+}
+
+const ZONE_BOUNDS = {
+  'East Cairo':    [[30.02, 31.28], [30.18, 31.55]],
+  'West Cairo':    [[29.92, 30.84], [30.12, 31.16]],
+  'South Cairo':   [[29.84, 31.16], [30.02, 31.42]],
+  'North Cairo':   [[30.10, 31.16], [30.20, 31.42]],
+  'Central Alex':  [[31.18, 29.88], [31.35, 30.14]],
+  'Agamy':         [[31.05, 29.72], [31.18, 30.00]],
+  'North Giza':    [[30.00, 30.98], [30.08, 31.22]],
+  'South Giza':    [[29.88, 30.84], [30.02, 31.06]],
+  'East Mansoura': [[30.94, 31.36], [31.08, 31.52]],
+  'West Mansoura': [[30.96, 31.24], [31.10, 31.42]],
+  'North Assiut':  [[27.18, 31.14], [27.30, 31.32]],
+  'South Assiut':  [[27.08, 31.04], [27.20, 31.24]],
+}
+
+// Generate synthetic heatmap points around a hub (order density simulation)
+const hubHeatPoints = (hubId, score) => {
+  const [lat, lng] = HUB_COORDS[hubId] || [30, 31]
+  const count = Math.round(12 + (score / 100) * 18)
+  const pts = []
+  for (let i = 0; i < count; i++) {
+    const s = (hubId.charCodeAt(0) * 17 + hubId.charCodeAt(1) * 31 + i * 7) % 1000
+    const r = (s / 1000) * 0.025
+    const a = (i / count) * Math.PI * 2 + (s / 1000)
+    pts.push([lat + Math.sin(a) * r, lng + Math.cos(a) * r, (score / 100) * 0.8 + 0.2])
+  }
+  return pts
+}
 
 const getHubTrend = (hubId) =>
   ALL_DATA.filter(r => r.id === hubId)
@@ -52,32 +129,35 @@ const Ring = ({ value, size = 90, stroke = 7 }) => {
   )
 }
 
-const CITY_COORDS = {
-  'Greater Cairo': [30.0444, 31.2357],
-  'Alexandria':    [31.2001, 29.9187],
-  'Giza':          [30.0131, 31.2089],
-  'Mansoura':      [31.0364, 31.3807],
-  'Assiut':        [27.1783, 31.1859],
-}
-
-const LeafletMap = ({ cities, onSelect, selected }) => {
+// ── Polygon map with CartoDB tiles + drill levels ──
+const LeafletMap = ({ cities, onSelectCity, selectedCity, expandedZone }) => {
   const containerRef = useRef(null)
   const mapRef       = useRef(null)
-  const layersRef    = useRef({})
+  const layersRef    = useRef([])
+  const heatRef      = useRef(null)
   const [ready, setReady] = useState(false)
+  const [drillCity, setDrillCity] = useState(null)  // city name or null (country view)
+
+  // Clear all layers
+  const clearLayers = useCallback(() => {
+    layersRef.current.forEach(l => { try { l.remove() } catch(e){} })
+    layersRef.current = []
+    if (heatRef.current) { try { heatRef.current.remove() } catch(e){} heatRef.current = null }
+  }, [])
 
   useEffect(() => {
     let timer
     const init = () => {
       if (!window.L || !containerRef.current || mapRef.current) return
       mapRef.current = window.L.map(containerRef.current, {
-        center: [28.5, 30.5], zoom: 6,
+        center: [28.0, 30.8], zoom: 6,
         scrollWheelZoom: false, zoomControl: false,
       })
-      window.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://openstreetmap.org">OpenStreetMap</a>',
-        maxZoom: 18,
-      }).addTo(mapRef.current)
+      // CartoDB Positron - clean light tiles
+      window.L.tileLayer(
+        'https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+        { attribution: '© OpenStreetMap contributors © CARTO', subdomains: 'abcd', maxZoom: 19 }
+      ).addTo(mapRef.current)
       window.L.control.zoom({ position: 'bottomright' }).addTo(mapRef.current)
       setReady(true)
     }
@@ -86,40 +166,141 @@ const LeafletMap = ({ cities, onSelect, selected }) => {
     return () => clearInterval(timer)
   }, [])
 
+  // Render country-level city polygons
+  const renderCountry = useCallback((L, cityData) => {
+    clearLayers()
+    if (mapRef.current) {
+      try { mapRef.current.setView([28.0, 30.8], 6) } catch(e){}
+    }
+    cityData.forEach(city => {
+      const poly = CITY_POLYGONS[city.name]
+      if (!poly) return
+      const score = city.scHB || 0
+      const col = hbColor(score)
+      const layer = L.polygon(poly, {
+        color: col, weight: 2, fillColor: col, fillOpacity: 0.18,
+      }).addTo(mapRef.current).on('click', () => {
+        setDrillCity(city.name)
+        onSelectCity(city.name)
+      })
+      const centroid = poly.reduce((acc, p) => [acc[0]+p[0]/poly.length, acc[1]+p[1]/poly.length], [0,0])
+      const icon = L.divIcon({
+        html: `<div style="background:white;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;color:${col};border:1.5px solid ${col};white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.14);font-family:Inter,sans-serif">${city.name.replace('Greater ','')}: ${score.toFixed(0)}%</div>`,
+        className: '', iconAnchor: [0, 0],
+      })
+      const lbl = L.marker(centroid, { icon }).addTo(mapRef.current).on('click', () => {
+        setDrillCity(city.name)
+        onSelectCity(city.name)
+      })
+      layersRef.current.push(layer, lbl)
+    })
+  }, [clearLayers, onSelectCity])
+
+  // Render city-level zone polygons + hub pins
+  const renderCity = useCallback((L, cityName, cityData) => {
+    clearLayers()
+    const bounds = CITY_BOUNDS[cityName]
+    if (mapRef.current && bounds) {
+      try { mapRef.current.fitBounds(bounds, { padding: [20, 20] }) } catch(e){}
+    }
+    const city = cityData.find(c => c.name === cityName)
+    if (!city) return
+    city.zones?.forEach(zone => {
+      const poly = ZONE_POLYGONS[zone.name]
+      if (!poly) return
+      const score = zone.scHB || 0
+      const col = hbColor(score)
+      const layer = L.polygon(poly, {
+        color: col, weight: 2, fillColor: col, fillOpacity: 0.22,
+      }).addTo(mapRef.current)
+      const centroid = poly.reduce((acc, p) => [acc[0]+p[0]/poly.length, acc[1]+p[1]/poly.length], [0,0])
+      const icon = L.divIcon({
+        html: `<div style="background:white;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:700;color:${col};border:1.5px solid ${col};white-space:nowrap;box-shadow:0 1px 4px rgba(0,0,0,0.12);font-family:Inter,sans-serif">${zone.name}: ${score.toFixed(0)}%</div>`,
+        className: '', iconAnchor: [0, 0],
+      })
+      const lbl = L.marker(centroid, { icon }).addTo(mapRef.current)
+      layersRef.current.push(layer, lbl)
+      // Hub pins per zone
+      zone.hubsList?.forEach(hub => {
+        const coords = HUB_COORDS[hub.id]
+        if (!coords) return
+        const hs = hub.scHB || 0
+        const hcol = hbColor(hs)
+        const hIcon = L.divIcon({
+          html: `<div style="width:10px;height:10px;border-radius:50%;background:${hcol};border:2px solid white;box-shadow:0 1px 4px rgba(0,0,0,0.25)"></div>`,
+          className: '', iconAnchor: [5, 5],
+        })
+        const m = L.marker(coords, { icon: hIcon }).addTo(mapRef.current)
+          .bindTooltip(`${hub.name}: ${hs.toFixed(0)}%`, { direction: 'top', offset: [0, -8] })
+        layersRef.current.push(m)
+      })
+    })
+  }, [clearLayers])
+
+  // Render zone-level: hub markers + order density heatmap
+  const renderZone = useCallback((L, zoneName, cityData) => {
+    const bounds = ZONE_BOUNDS[zoneName]
+    // Just zoom to zone - layers already rendered at city level
+    if (mapRef.current && bounds) {
+      try { mapRef.current.fitBounds(bounds, { padding: [30, 30] }) } catch(e){}
+    }
+    // Build heatmap from all hubs in this zone
+    let allPoints = []
+    cityData.forEach(city => {
+      city.zones?.forEach(zone => {
+        if (zone.name !== zoneName) return
+        zone.hubsList?.forEach(hub => {
+          const pts = hubHeatPoints(hub.id, hub.scHB || 80)
+          allPoints = allPoints.concat(pts)
+        })
+      })
+    })
+    if (window.L.heatLayer && allPoints.length) {
+      if (heatRef.current) { try { heatRef.current.remove() } catch(e){} }
+      heatRef.current = window.L.heatLayer(allPoints, {
+        radius: 25, blur: 20, maxZoom: 14,
+        gradient: { 0.4: '#3B82F6', 0.65: '#F59E0B', 1.0: '#E30613' }
+      }).addTo(mapRef.current)
+    }
+  }, [])
+
+  // Sync layers when ready or data changes
   useEffect(() => {
     if (!ready || !mapRef.current) return
     const L = window.L
-    Object.values(layersRef.current).forEach(l => { try { l.remove() } catch(e){} })
-    layersRef.current = {}
-    cities.forEach(city => {
-      const coords = CITY_COORDS[city.name]
-      if (!coords) return
-      const score  = city.scHB || 0
-      const col    = hbColor(score)
-      const isSel  = selected === city.name
-      const radius = city.name === 'Greater Cairo' ? 48000 : 32000
-      const circle = L.circle(coords, {
-        radius, fillColor: col, color: col,
-        weight: isSel ? 3 : 1.5,
-        fillOpacity: isSel ? 0.38 : 0.18,
-      }).addTo(mapRef.current).on('click', () => onSelect(city.name))
-      const shortName = city.name.replace('Greater Cairo', 'Cairo')
-      const icon = L.divIcon({
-        html: `<div style="background:white;padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700;color:${col};border:1.5px solid ${col};white-space:nowrap;box-shadow:0 2px 6px rgba(0,0,0,0.18);font-family:Inter,sans-serif">${shortName}: ${score.toFixed(0)}%</div>`,
-        className: '', iconAnchor: [0, 0],
-      })
-      const lbl = L.marker(coords, { icon }).addTo(mapRef.current).on('click', () => onSelect(city.name))
-      layersRef.current[city.name + '_c'] = circle
-      layersRef.current[city.name + '_l'] = lbl
-    })
-  }, [ready, cities, selected, onSelect])
+    if (drillCity) {
+      renderCity(L, drillCity, cities)
+    } else {
+      renderCountry(L, cities)
+    }
+  }, [ready, cities, drillCity, renderCity, renderCountry])
+
+  // Zoom to zone when expandedZone changes
+  useEffect(() => {
+    if (!ready || !mapRef.current || !expandedZone || !drillCity) return
+    renderZone(window.L, expandedZone, cities)
+  }, [ready, expandedZone, drillCity, cities, renderZone])
+
+  const handleBack = () => {
+    setDrillCity(null)
+    onSelectCity(null)
+    if (heatRef.current) { try { heatRef.current.remove() } catch(e){} heatRef.current = null }
+  }
 
   useEffect(() => () => {
     if (mapRef.current) { mapRef.current.remove(); mapRef.current = null }
   }, [])
 
   return (
-    <div style={{ border: `1px solid ${T.border}`, borderRadius: 12, overflow: 'hidden', height: 300 }}>
+    <div style={{ position: 'relative', border: `1px solid ${T.border}`, borderRadius: 12, overflow: 'hidden', height: 320 }}>
+      {drillCity && (
+        <button onClick={handleBack} style={{
+          position: 'absolute', top: 10, left: 10, zIndex: 1000,
+          background: T.card, border: `1px solid ${T.border}`, borderRadius: 7,
+          padding: '5px 12px', fontSize: 11, fontWeight: 700, color: T.textSec, cursor: 'pointer',
+          boxShadow: T.shadow,
+        }}>← All Cities</button>
+      )}
       <div ref={containerRef} style={{ width: '100%', height: '100%' }}/>
     </div>
   )
@@ -197,8 +378,9 @@ export default function Dashboard() {
   const [expandedCity, setExpandedCity] = useState(null)
   const [expandedZone, setExpandedZone] = useState(null)
   const [expandedHub, setExpandedHub]   = useState(null)
-  const [mapSelected, setMapSelected]   = useState(null)
+  const [mapSelectedCity, setMapSelectedCity] = useState(null)
   const [showPillars, setShowPillars]   = useState(false)
+  const [viewHubsZone, setViewHubsZone] = useState(null)
 
   const filteredData = useMemo(() => ALL_DATA.slice(0, period * 18), [period])
   const cities       = useMemo(() => aggregate(filteredData), [filteredData])
@@ -214,11 +396,17 @@ export default function Dashboard() {
   const merch = netAvg('scMerch')
   const delta = hb - prevAvg('scHB')
 
-  const handleMapSelect = useCallback(cityName => {
-    setMapSelected(p  => p === cityName ? null : cityName)
-    setExpandedCity(p => p === cityName ? null : cityName)
-    setExpandedZone(null)
-    setExpandedHub(null)
+  const handleMapSelectCity = useCallback(cityName => {
+    setMapSelectedCity(cityName)
+    if (cityName) {
+      setExpandedCity(cityName)
+      setExpandedZone(null)
+      setExpandedHub(null)
+    } else {
+      setExpandedCity(null)
+      setExpandedZone(null)
+      setExpandedHub(null)
+    }
   }, [])
 
   const hubTrendData  = useMemo(() => expandedHub  ? getHubTrend(expandedHub)   : null, [expandedHub])
@@ -226,7 +414,7 @@ export default function Dashboard() {
 
   const resetPeriod = d => {
     setPeriod(d)
-    setExpandedCity(null); setExpandedZone(null); setExpandedHub(null); setMapSelected(null)
+    setExpandedCity(null); setExpandedZone(null); setExpandedHub(null); setMapSelectedCity(null); setViewHubsZone(null)
   }
 
   return (
@@ -235,7 +423,7 @@ export default function Dashboard() {
         <div>
           <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Section 05: Live Demo</span>
           <h2 style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 800, letterSpacing: '-0.03em', color: T.text, marginTop: 6 }}>HeartBeat Dashboard</h2>
-          <p style={{ color: T.textMuted, fontSize: 13, marginTop: 4 }}>Simulated network data - click city nodes on the map or rows in the table to drill down</p>
+          <p style={{ color: T.textMuted, fontSize: 13, marginTop: 4 }}>Simulated network data - click city polygons on the map or rows in the table to drill down</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           {[7, 30, 90].map(d => (
@@ -294,8 +482,10 @@ export default function Dashboard() {
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 16, marginBottom: 20 }}>
         <div>
-          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>Network Geography - click a city to drill down</div>
-          <LeafletMap cities={cities} onSelect={handleMapSelect} selected={mapSelected}/>
+          <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.08em', marginBottom: 8 }}>
+            Network Geography — click a city polygon to drill in
+          </div>
+          <LeafletMap cities={cities} onSelectCity={handleMapSelectCity} selectedCity={mapSelectedCity} expandedZone={expandedZone}/>
         </div>
         <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, padding: 20, boxShadow: T.shadow }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 14 }}>
@@ -327,6 +517,7 @@ export default function Dashboard() {
         </div>
       </div>
 
+      {/* Drill table */}
       <div style={{ background: T.card, border: `1px solid ${T.border}`, borderRadius: 12, overflow: 'hidden', boxShadow: T.shadow }}>
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 90px 90px 90px', gap: 8,
           padding: '14px 24px', borderBottom: `1px solid ${T.border}`, background: T.cardSub }}>
@@ -339,7 +530,7 @@ export default function Dashboard() {
           const ce = expandedCity === city.name
           return (
             <React.Fragment key={city.name}>
-              <div onClick={() => { setExpandedCity(ce ? null : city.name); setExpandedZone(null); setExpandedHub(null); setMapSelected(ce ? null : city.name) }}
+              <div onClick={() => { const next = !ce; setExpandedCity(next ? city.name : null); setExpandedZone(null); setExpandedHub(null); setViewHubsZone(null); setMapSelectedCity(next ? city.name : null) }}
                 style={{ display: 'grid', gridTemplateColumns: '1fr 110px 90px 90px 90px', gap: 8,
                   padding: '13px 24px', background: ce ? T.redLight : 'transparent',
                   borderBottom: `1px solid ${T.borderSub}`, cursor: 'pointer', transition: 'background 0.2s' }}>
@@ -358,18 +549,28 @@ export default function Dashboard() {
 
               {ce && city.zones?.map(zone => {
                 const ze = expandedZone === zone.name
+                const vh = viewHubsZone === zone.name
                 return (
                   <React.Fragment key={zone.name}>
-                    <div onClick={() => { setExpandedZone(ze ? null : zone.name); setExpandedHub(null) }}
-                      style={{ display: 'grid', gridTemplateColumns: '1fr 110px 90px 90px 90px', gap: 8,
-                        padding: '11px 24px 11px 44px', background: ze ? T.blueLight : T.cardSub,
-                        borderBottom: `1px solid ${T.border}`, cursor: 'pointer' }}>
+                    {/* Zone row */}
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 110px 90px 90px 90px', gap: 8,
+                      padding: '11px 24px 11px 44px', background: ze ? T.blueLight : T.cardSub,
+                      borderBottom: `1px solid ${T.border}` }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                        <span style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
-                          borderRadius: 4, background: ze ? BLUE : T.border, color: ze ? '#fff' : T.textMuted,
-                          fontSize: 10, fontWeight: 700, flexShrink: 0 }}>{ze ? '▾' : '▸'}</span>
-                        <span style={{ fontWeight: 600, fontSize: 13, color: T.textSec }}>{zone.name}</span>
+                        <span onClick={() => { setExpandedZone(ze ? null : zone.name); setExpandedHub(null) }}
+                          style={{ width: 20, height: 20, display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+                            borderRadius: 4, background: ze ? BLUE : T.border, color: ze ? '#fff' : T.textMuted,
+                            fontSize: 10, fontWeight: 700, flexShrink: 0, cursor: 'pointer' }}>{ze ? '▾' : '▸'}</span>
+                        <span onClick={() => { setExpandedZone(ze ? null : zone.name); setExpandedHub(null) }}
+                          style={{ fontWeight: 600, fontSize: 13, color: T.textSec, cursor: 'pointer' }}>{zone.name}</span>
                         <span style={{ fontSize: 10, color: T.textMuted }}>{zone.hubsList?.length} hubs</span>
+                        <button
+                          onClick={e => { e.stopPropagation(); setViewHubsZone(vh ? null : zone.name); setExpandedZone(vh ? expandedZone : zone.name) }}
+                          style={{ marginLeft: 8, padding: '2px 10px', borderRadius: 5, fontSize: 10, fontWeight: 700, cursor: 'pointer',
+                            background: vh ? BLUE : T.card, color: vh ? '#fff' : BLUE,
+                            border: `1px solid ${BLUE}`, transition: 'all 0.15s' }}>
+                          {vh ? 'Hide Hubs' : 'View Hubs'}
+                        </button>
                       </div>
                       <div style={{ fontWeight: 700, fontSize: 13, color: hbColor(zone.scHB||0)    }}>{(zone.scHB||0).toFixed(1)}%</div>
                       <div style={{ fontSize: 12,    color: hbColor(zone.scStars||0) }}>{(zone.scStars||0).toFixed(1)}%</div>
@@ -383,7 +584,8 @@ export default function Dashboard() {
                       </div>
                     )}
 
-                    {ze && zone.hubsList?.map(hub => {
+                    {/* Hubs list - shown when View Hubs clicked OR zone expanded */}
+                    {(ze || vh) && zone.hubsList?.map(hub => {
                       const he = expandedHub === hub.id
                       return (
                         <React.Fragment key={hub.id}>
