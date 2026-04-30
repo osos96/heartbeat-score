@@ -564,13 +564,6 @@ export default function Dashboard() {
                         <span onClick={() => { setExpandedZone(ze ? null : zone.name); setExpandedHub(null) }}
                           style={{ fontWeight: 600, fontSize: 13, color: T.textSec, cursor: 'pointer' }}>{zone.name}</span>
                         <span style={{ fontSize: 10, color: T.textMuted }}>{zone.hubsList?.length} hubs</span>
-                        {/* <button
-                          onClick={e => { e.stopPropagation(); setViewHubsZone(vh ? null : zone.name); setExpandedZone(vh ? expandedZone : zone.name) }}
-                          style={{ marginLeft: 8, padding: '2px 10px', borderRadius: 5, fontSize: 10, fontWeight: 700, cursor: 'pointer',
-                            background: vh ? BLUE : T.card, color: vh ? '#fff' : BLUE,
-                            border: `1px solid ${BLUE}`, transition: 'all 0.15s' }}>
-                          {vh ? 'Hide Hubs' : 'View Hubs'}
-                        </button> */}
                       </div>
                       <div style={{ fontWeight: 700, fontSize: 13, color: hbColor(zone.scHB||0)    }}>{(zone.scHB||0).toFixed(1)}%</div>
                       <div style={{ fontSize: 12,    color: hbColor(zone.scStars||0) }}>{(zone.scStars||0).toFixed(1)}%</div>
