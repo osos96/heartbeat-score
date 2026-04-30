@@ -170,7 +170,7 @@ const LeafletMap = ({cities,onSelectCity,expandedZone,onHubSelect,activeHubId}) 
       if(!window.L||!containerRef.current||mapRef.current) return
       mapRef.current=window.L.map(containerRef.current,{center:[28.0,30.8],zoom:6,scrollWheelZoom:false,zoomControl:false})
       window.L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
-        {attribution:'© OpenStreetMap contributors © CARTO',subdomains:'abcd',maxZoom:19}).addTo(mapRef.current)
+        {attribution:'Omar Ahmed',subdomains:'© OpenStreetMap contributors © CARTO',maxZoom:19}).addTo(mapRef.current)
       window.L.control.zoom({position:'bottomright'}).addTo(mapRef.current)
       setReady(true)
     }
