@@ -71,7 +71,7 @@ export default function Roadmap() {
             border: `1px solid ${activeH===h.id ? T.red : T.border}`,
             color: activeH===h.id ? T.red : T.textSec, transition:'all 0.15s',
             boxShadow: activeH===h.id ? 'none' : T.shadow,
-          }}>{h.id} — {h.dept}</button>
+          }}>{h.id} - {h.dept}</button>
         ))}
       </div>
 
