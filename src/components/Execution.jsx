@@ -64,7 +64,7 @@ const JIRA_CEREMONIES = [
     cadence: 'Quarterly',
     icon: '◈',
     color: BLUE,
-    desc: 'Program Increment planning sessions with each vertical — Ops, Product, CS, Merchant Success — to align on the next quarter\'s data requirements, development priorities, and analytical deliverables.',
+    desc: 'Program Increment planning sessions with each vertical including Operations, Product, Customer Service and Merchant Success to align on the next quarter\'s data requirements, development priorities, and analytical deliverables.',
     detail: 'Each vertical nominates a Data Champion who brings a prioritised backlog of data asks. The data team reviews feasibility, estimates, and commits to a PI roadmap. Outcomes are tracked as Epics in Jira.',
   },
   {
@@ -72,7 +72,7 @@ const JIRA_CEREMONIES = [
     cadence: '2-Week Sprints',
     icon: '◎',
     color: PURPLE,
-    desc: 'Standard Scrum ceremonies adapted for a data team: sprint planning from the Jira board, daily async standups via structured Slack threads, and sprint reviews with stakeholder demos.',
+    desc: 'Standard Scrum ceremonies adapted for a data team: sprint planning from the JIRA board, daily async standups via structured Slack threads, and sprint reviews with stakeholder demos.',
     detail: 'Sprint tickets follow a standard template: business question → data source → owner → acceptance criteria → stakeholder sign-off. No ticket enters a sprint without a named internal customer.',
   },
   {
@@ -80,15 +80,15 @@ const JIRA_CEREMONIES = [
     cadence: 'Weekly',
     icon: '◉',
     color: GREEN,
-    desc: 'Weekly backlog refinement session to triage new requests from verticals, score them against the PI roadmap, and ensure Jira tickets are well-defined before sprint commitment.',
-    detail: 'Requests are scored on a 2×2 of impact vs. effort. High-impact, low-effort tickets get fast-tracked. High-effort items require PI-level commitment. All requests are visible to the requesting vertical in Jira.',
+    desc: 'Weekly backlog refinement session to triage new requests from verticals, score them against the PI roadmap, and ensure JIRA tickets are well-defined before sprint commitment.',
+    detail: 'Requests are scored on a 2×2 of impact vs. effort. High-impact, low-effort tickets get fast-tracked. High-effort items require PI-level commitment. All requests are visible to the requesting vertical in JIRA.',
   },
   {
     title: 'Stakeholder Demos',
     cadence: 'End of Sprint',
     icon: '◐',
     color: AMBER,
-    desc: 'Every sprint closes with a 30-minute demo for the relevant vertical. Analysts walk through the deliverable live — no screenshots, no decks — to close the feedback loop before production release.',
+    desc: 'Every sprint closes with a 30-minute demo for the relevant vertical. Analysts walk through the deliverable live, no screenshots, no decks, to close the feedback loop before production release.',
     detail: 'Demos are recorded and shared in Confluence. Stakeholder sign-off is captured as a Jira transition before any dashboard or pipeline goes to production.',
   },
 ]
@@ -113,9 +113,9 @@ export default function Execution() {
         How we plan, collaborate, and deliver.
       </h2>
       <p style={{ fontSize: 16, color: T.textSec, lineHeight: 1.8, maxWidth: 720, marginBottom: 48 }}>
-        Data work without structure drifts. Every analytical initiative — from a quick metric fix to a 13-week
-        build — follows the same operating rhythm: PI planning with each vertical, sprint-based execution
-        tracked in Jira, and a clear cross-functional cadence that keeps the data team accountable to the business.
+        Data work without structure drifts. Every analytical initiative, from a quick metric fix to a 13-week
+        build, follows the same operating rhythm: PI planning with each vertical, sprint-based execution
+        tracked in JIRA, and a clear cross-functional cadence that keeps the data team accountable to the business.
       </p>
 
       {/* Tab nav */}
@@ -145,8 +145,8 @@ export default function Execution() {
               Working with the Data Team
             </div>
             <p style={{ fontSize: 15, color: T.textSec, lineHeight: 1.85, maxWidth: 820, marginBottom: 20 }}>
-              The data team operates as an embedded product function — not a service desk. Every vertical
-              interacts with us through a structured intake process, a shared Jira board, and a quarterly
+              The data team operates as an embedded product function, not a service desk. Every vertical
+              interacts with us through a structured intake process, a shared JIRA board, and a quarterly
               Program Increment planning session. This prevents ad hoc requests from crowding out strategic
               work, and ensures that every deliverable traces back to a named business outcome.
             </p>
@@ -197,7 +197,7 @@ export default function Execution() {
                   <p style={{ fontSize: 13, color: T.textSec, lineHeight: 1.75, marginBottom: 12 }}>{c.desc}</p>
                   <div style={{ background: T.borderSub, border: `1px solid ${T.border}`, borderRadius: 8,
                     padding: '10px 14px' }}>
-                    <p style={{ fontSize: 12, color: T.textMuted, lineHeight: 1.7 }}>{c.detail}</p>
+                    <p style={{ fontSize: 12, color: T.textSec, lineHeight: 1.7 }}>{c.detail}</p>
                   </div>
                 </div>
               ))}
