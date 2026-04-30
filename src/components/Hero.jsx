@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react'
 import { T } from './theme'
 
-const WORDS = ['inconsistent','fragmented','unmeasured','conflicting','reactive']
+const WORDS = ['inconsistent','fragmented','conflicting','reactive']
 
 export default function Hero() {
   const [idx, setIdx] = useState(0)
