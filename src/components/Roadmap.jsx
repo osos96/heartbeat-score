@@ -13,9 +13,9 @@ const HYPS = [
   {
     id:'H1', dept:'Operations', title:'Hub backlog is the primary upstream cause of DSR failure',
     logic:`In the Bosta model, every parcel must clear the hub dispatch step before a Star can attempt delivery.
-A hub running a backlog means parcels are physically present but not assigned to OFD runs - making delivery impossible regardless of driver quality.
+A hub running a backlog means parcels are physically present but not assigned to OFD runs, making delivery impossible regardless of driver quality.
 From operational observation, backlog spikes correlate with Sundays (post-weekend accumulation) and pre-holiday surges.
-If this hypothesis holds, it redirects the root cause away from driver performance and toward hub capacity planning - a fundamentally different intervention.`,
+If this hypothesis holds, it redirects the root cause away from driver performance and toward hub capacity planning, a fundamentally different intervention.`,
     statement:'Hubs with Backlog% > 10% will show DSR < 72% in the same 7-day window, with a Pearson r > 0.65.',
     approach:'Join hub_receipts with dispatch_events to calculate backlog by hub by day. Correlate with fact_deliveries DSR per hub per day. Control for volume tier (high/low volume hubs). Segment by city.',
     interviews:['Hub Operations Manager - peak capacity thresholds and manual overrides','Logistics Planning - volume forecasting accuracy and OFD sizing logic','VP Operations - escalation history and known problem hubs'],

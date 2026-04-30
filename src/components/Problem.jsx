@@ -148,7 +148,7 @@ export default function Problem() {
       )}
 
       <div style={{ fontSize: 11, fontWeight: 700, color: T.textMuted, textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: 6 }}>DSR Driver Tree</div>
-      <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 8 }}>What directly moves DSR, and what doesn't</h3>
+      <h3 style={{ fontSize: 22, fontWeight: 700, color: T.text, marginBottom: 8 }}>What directly moves DSR, and what doesn't?</h3>
       <p style={{ fontSize: 14, color: T.textSec, lineHeight: 1.75, maxWidth: 700, marginBottom: 28 }}>
         DSR is specifically the rate of successful deliveries. The driver tree below shows only the metrics
         that have a direct causal relationship with whether a parcel is delivered or not. Operational

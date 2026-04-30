@@ -422,7 +422,7 @@ export default function Dashboard() {
       <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: 40, flexWrap: 'wrap', gap: 16 }}>
         <div>
           <span style={{ fontSize: 11, fontWeight: 700, color: T.red, letterSpacing: '0.1em', textTransform: 'uppercase' }}>Section 05: Live Demo</span>
-          <h2 style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 800, letterSpacing: '-0.03em', color: T.text, marginTop: 6 }}>HeartBeat Dashboard</h2>
+          <h2 style={{ fontSize: 'clamp(1.6rem,3vw,2.4rem)', fontWeight: 800, letterSpacing: '-0.03em', color: T.text, marginTop: 6 }}>HeartBeat Dashboard Mockup</h2>
           <p style={{ color: T.textMuted, fontSize: 13, marginTop: 4 }}>Simulated network data - click city polygons on the map or rows in the table to drill down</p>
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
