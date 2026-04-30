@@ -8,6 +8,7 @@ import Architecture from './components/Architecture'
 import Framework from './components/Framework'
 import Dashboard from './components/Dashboard'
 import Roadmap from './components/Roadmap'
+import Execution from './components/Execution'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
       <section id="framework"><Framework /></section>
       <section id="dashboard"><Dashboard /></section>
       <section id="roadmap"><Roadmap /></section>
+      <section id="execution"><Execution /></section>
     </div>
   )
 }

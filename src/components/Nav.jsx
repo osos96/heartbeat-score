@@ -10,6 +10,7 @@ const SECTIONS = [
   { id: 'framework',   label: 'Framework' },
   { id: 'dashboard',   label: 'Dashboard' },
   { id: 'roadmap',     label: 'Roadmap' },
+  { id: 'execution',   label: 'Execution' },
 ]
 
 export default function Nav() {
