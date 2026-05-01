@@ -1,5 +1,6 @@
 
 import React from 'react'
+import { Analytics } from '@vercel/analytics/react'
 import Nav from './components/Nav'
 import Hero from './components/Hero'
 import BusinessModel from './components/BusinessModel'
@@ -22,6 +23,7 @@ export default function App() {
       <section id="dashboard"><Dashboard /></section>
       <section id="roadmap"><Roadmap /></section>
       <section id="execution"><Execution /></section>
+      <Analytics />
     </div>
   )
 }
